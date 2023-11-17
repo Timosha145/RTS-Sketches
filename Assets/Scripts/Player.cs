@@ -46,9 +46,9 @@ public class Player : MonoBehaviour
         {
             if (_pawnSelections.SelectedEnemyPawn!=null)
             {
-                foreach (PawnAI PawnAI in _pawnSelections.PawnSelectedList)
+                foreach (Pawn Pawn in _pawnSelections.PawnSelectedList)
                 {
-                    PawnAI.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
+                    Pawn.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
                 }
             }
             else
@@ -59,10 +59,10 @@ public class Player : MonoBehaviour
             //switch (_order)
             //{
             //    case Order.CircleTarget:
-            //        PawnAI.CircleTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
+            //        Pawn.CircleTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
             //        break;
             //    case Order.LineUpOnTarget:
-            //        PawnAI.LineUpPawnsOnTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
+            //        Pawn.LineUpPawnsOnTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
             //        break;
             //    default:
             //        break;

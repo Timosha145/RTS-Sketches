@@ -8,7 +8,7 @@ public class TileSpawn : ExtendedMonoBehaviour
 
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Transform _gatheringPoint;
-    [SerializeField] private PawnAI _pawnPrefab;
+    [SerializeField] private Pawn _pawnPrefab;
 
     private float _timerToSpawn;
 
@@ -23,8 +23,8 @@ public class TileSpawn : ExtendedMonoBehaviour
         {
             if (HandleTimer(ref _timerToSpawn, Team.SpawnRateTime))
             {
-                PawnAI spawnedPawn = Instantiate(_pawnPrefab, _spawnPoint.position, Quaternion.identity);
-                spawnedPawn.SetPropertiesOnce(Team, _gatheringPoint.position);
+                Pawn spawnedPawn = Instantiate(_pawnPrefab, _spawnPoint.position, Quaternion.identity);
+                //spawnedPawn.SetPropertiesOnce(Team, _gatheringPoint.position);
             }
         }
         else

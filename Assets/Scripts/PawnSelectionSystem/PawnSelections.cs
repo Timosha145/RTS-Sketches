@@ -13,9 +13,9 @@ public class PawnSelections : MonoBehaviour
 
     public static PawnSelections Instance { get; private set; }
 
-    public List<PawnAI> PawnList = new List<PawnAI>();
-    public List<PawnAI> PawnSelectedList = new List<PawnAI>();
-    public PawnAI SelectedEnemyPawn;
+    public List<Pawn> PawnList = new List<Pawn>();
+    public List<Pawn> PawnSelectedList = new List<Pawn>();
+    public Pawn SelectedEnemyPawn;
 
     private void Awake()
     {
@@ -29,54 +29,54 @@ public class PawnSelections : MonoBehaviour
         }
     }
 
-    public void ClickSelect(PawnAI PawnAI)
+    public void ClickSelect(Pawn Pawn)
     {
         DeselectAll();
 
-        PawnAI.Select();
-        PawnSelectedList.Add(PawnAI);
+        Pawn.Select();
+        PawnSelectedList.Add(Pawn);
     }
 
-    public void ShiftClickSelect(PawnAI PawnAI)
+    public void ShiftClickSelect(Pawn Pawn)
     {
-        if (!PawnSelectedList.Contains(PawnAI) && PawnSelectedList.Count < _maxSelected)
+        if (!PawnSelectedList.Contains(Pawn) && PawnSelectedList.Count < _maxSelected)
         {
-            PawnAI.Select();
+            Pawn.Select();
 
-            PawnSelectedList.Add(PawnAI);
+            PawnSelectedList.Add(Pawn);
         }
         else
         {
-            PawnAI.Deselect();
+            Pawn.Deselect();
 
-            PawnSelectedList.Remove(PawnAI);
+            PawnSelectedList.Remove(Pawn);
         }
     }
 
-    public void DragSelect(PawnAI PawnAI)
+    public void DragSelect(Pawn Pawn)
     {
-        if (!PawnSelectedList.Contains(PawnAI) && PawnSelectedList.Count < _maxSelected)
+        if (!PawnSelectedList.Contains(Pawn) && PawnSelectedList.Count < _maxSelected)
         {
-            PawnAI.Select();
+            Pawn.Select();
 
-            PawnSelectedList.Add(PawnAI);
+            PawnSelectedList.Add(Pawn);
         }
     }
 
     public void DeselectAll()
     {
-        foreach (PawnAI PawnAI in PawnSelectedList)
+        foreach (Pawn Pawn in PawnSelectedList)
         {
-            PawnAI.Deselect();
+            Pawn.Deselect();
         }
 
         PawnSelectedList.Clear();
     }
 
-    public void SelectEnemy(PawnAI PawnAI)
+    public void SelectEnemy(Pawn Pawn)
     {
-        PawnAI.SelectAsEnemy();
-        SelectedEnemyPawn = PawnAI;
+        Pawn.SelectAsEnemy();
+        SelectedEnemyPawn = Pawn;
     }
 
     public void DeselectEnemy()

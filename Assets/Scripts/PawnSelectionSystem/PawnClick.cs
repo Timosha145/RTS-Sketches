@@ -23,16 +23,16 @@ public class PawnClick : MonoBehaviour
             // Ray hit a clickable object
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI))
+                if (raycastHit.collider.TryGetComponent(out Pawn Pawn))
                 {
-                    PawnSelections.Instance.ShiftClickSelect(PawnAI);
+                    PawnSelections.Instance.ShiftClickSelect(Pawn);
                 }
             }
             else
             {
-                if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI))
+                if (raycastHit.collider.TryGetComponent(out Pawn Pawn))
                 {
-                    PawnSelections.Instance.ClickSelect(PawnAI);
+                    PawnSelections.Instance.ClickSelect(Pawn);
                 }
             }
         }
@@ -56,14 +56,14 @@ public class PawnClick : MonoBehaviour
         _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(_ray, out RaycastHit raycastHit, float.MaxValue, PawnSelections.Instance.EnemyPawnLayer))
         {
-            // Reselect enemy PawnAI IF collider object has a PawnAI component AND previous call was not on the same gameobject
-            if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI) && PawnSelections.Instance.SelectedEnemyPawn != PawnAI)
+            // Reselect enemy Pawn IF collider object has a Pawn component AND previous call was not on the same gameobject
+            if (raycastHit.collider.TryGetComponent(out Pawn Pawn) && PawnSelections.Instance.SelectedEnemyPawn != Pawn)
             {
                 PawnSelections.Instance.DeselectEnemy();
 
-                if (PawnAI.Team != Player.Instance.Team)
+                if (Pawn.Team != Player.Instance.Team)
                 {
-                    PawnSelections.Instance.SelectEnemy(PawnAI);
+                    PawnSelections.Instance.SelectEnemy(Pawn);
                 }
             }
         }

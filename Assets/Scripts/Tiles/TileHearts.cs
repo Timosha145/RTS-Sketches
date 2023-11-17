@@ -21,11 +21,11 @@ public class TileHearts : TileBase
 
         if (HandleTimer(ref _timerToHeal, _timerToHealMax))
         {
-            foreach (PawnAI PawnAI in _pawnsInZone)
+            foreach (Pawn Pawn in _pawnsInZone)
             {
-                if (PawnAI.Health < PawnAI.MaxHealth && PawnAI.Team == _capturedByTeam)
+                if (Pawn.Health < Pawn.MaxHealth && Pawn.Team == _capturedByTeam)
                 {
-                    PawnAI.ChangeHealth(_healthModifier);
+                    Pawn.ChangeHealth(_healthModifier);
                 }
             }
         }
