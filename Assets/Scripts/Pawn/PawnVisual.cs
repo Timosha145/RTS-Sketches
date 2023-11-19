@@ -70,7 +70,7 @@ public class PawnVisual : MonoBehaviour
     protected void AttackEnded()
     {
         _pawn.OnAttackEnd();
-        _pawn.OnAnimationStopped();
+        AnimationStopped();
     }
 
     protected void AnimationStopped()

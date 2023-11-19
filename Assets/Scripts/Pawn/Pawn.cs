@@ -32,6 +32,7 @@ public class Pawn : ExtendedMonoBehaviour
     protected Pawn _targetPawn;
     protected float _damage;
 
+    private int _numOfPlatingAnimations = 0;
     private float _timerToSit, _timerToSitMax = 3f;
     private float _lastMoveTime;
     private float _carvingTime = 10.5f;
@@ -94,6 +95,11 @@ public class Pawn : ExtendedMonoBehaviour
         HandleMovement();
         HandleSitting();
         HandleAttack();
+
+        if (ISTEST)
+        {
+            Debug.Log(_numOfPlatingAnimations);
+        }
     }
 
     private void OnDestroy()
@@ -194,20 +200,18 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void OnAnimationStarted()
     {
-        if (ISTEST)
-        {
-            Debug.Log("Start");
-        }
+        _numOfPlatingAnimations++;
         _isAnimationPlaying = true;
     }
 
     public void OnAnimationStopped()
     {
-        if (ISTEST)
+        _numOfPlatingAnimations--;
+
+        if (_numOfPlatingAnimations == 0)
         {
-            Debug.Log("End");
+            _isAnimationPlaying = false;
         }
-        _isAnimationPlaying = false;
     }
 
     // If pawn's current State is Idle, it's State will change to Sitting after certain amount of seconds
