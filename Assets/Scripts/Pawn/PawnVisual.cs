@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Threading.Tasks;
 using UnityEngine;
-using static Pawn;
 
 [RequireComponent(typeof(Animator)), RequireComponent(typeof(Outline))]
 public class PawnVisual : MonoBehaviour
@@ -46,7 +43,7 @@ public class PawnVisual : MonoBehaviour
         ChangeBonesMaterial();
     }
 
-    private void Pawn_OnHealthChanged(object sender, OnHealthChangedEventArgs e)
+    private void Pawn_OnHealthChanged(object sender, Pawn.OnHealthChangedEventArgs e)
     {
         _healthBarUI.UpdateHealthBar(_pawn.MaxHealth, e.Health);
     }
@@ -61,6 +58,7 @@ public class PawnVisual : MonoBehaviour
         _pawn.OnEndedSitting -= Pawn_OnEndedSitting;
         _pawn.OnAttack -= Pawn_OnAttack;
         _pawn.OnHealthChanged -= Pawn_OnHealthChanged;
+
     }
 
     protected void Attack()
@@ -108,7 +106,7 @@ public class PawnVisual : MonoBehaviour
         _selectedOutline.enabled = false;
     }
 
-    private void Pawn_OnSelected(object sender, OnSelectedEventArgs e)
+    private void Pawn_OnSelected(object sender, Pawn.OnSelectedEventArgs e)
     {
         _selectedOutline.OutlineColor = e.Color;
         _selectedOutline.enabled = true;

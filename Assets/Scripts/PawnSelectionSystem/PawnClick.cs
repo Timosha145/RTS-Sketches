@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PawnClick : MonoBehaviour
@@ -23,16 +22,16 @@ public class PawnClick : MonoBehaviour
             // Ray hit a clickable object
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                if (raycastHit.collider.TryGetComponent(out Pawn Pawn))
+                if (raycastHit.collider.TryGetComponent(out Pawn pawn))
                 {
-                    PawnSelections.Instance.ShiftClickSelect(Pawn);
+                    PawnSelections.Instance.ShiftClickSelect(pawn);
                 }
             }
             else
             {
-                if (raycastHit.collider.TryGetComponent(out Pawn Pawn))
+                if (raycastHit.collider.TryGetComponent(out Pawn pawn))
                 {
-                    PawnSelections.Instance.ClickSelect(Pawn);
+                    PawnSelections.Instance.ClickSelect(pawn);
                 }
             }
         }
@@ -56,14 +55,14 @@ public class PawnClick : MonoBehaviour
         _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(_ray, out RaycastHit raycastHit, float.MaxValue, PawnSelections.Instance.EnemyPawnLayer))
         {
-            // Reselect enemy Pawn IF collider object has a Pawn component AND previous call was not on the same gameobject
-            if (raycastHit.collider.TryGetComponent(out Pawn Pawn) && PawnSelections.Instance.SelectedEnemyPawn != Pawn)
+            // Reselect enemy pawn IF collider object has a pawn component AND previous call was not on the same gameobject
+            if (raycastHit.collider.TryGetComponent(out Pawn pawn) && PawnSelections.Instance.SelectedEnemyPawn != pawn)
             {
                 PawnSelections.Instance.DeselectEnemy();
 
-                if (Pawn.Team != Player.Instance.Team)
+                if (pawn.Team != Player.Instance.Team)
                 {
-                    PawnSelections.Instance.SelectEnemy(Pawn);
+                    PawnSelections.Instance.SelectEnemy(pawn);
                 }
             }
         }

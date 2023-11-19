@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -44,11 +43,11 @@ public class Player : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, _groundLayerMask))
         {
-            if (_pawnSelections.SelectedEnemyPawn!=null)
+            if (_pawnSelections.SelectedEnemyPawn != null)
             {
-                foreach (Pawn Pawn in _pawnSelections.PawnSelectedList)
+                foreach (Pawn pawn in _pawnSelections.PawnSelectedList)
                 {
-                    Pawn.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
+                    pawn.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
                 }
             }
             else

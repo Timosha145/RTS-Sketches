@@ -29,59 +29,59 @@ public class PawnSelections : MonoBehaviour
         }
     }
 
-    public void ClickSelect(Pawn Pawn)
+    public void ClickSelect(Pawn pawn)
     {
         DeselectAll();
 
-        Pawn.Select();
-        PawnSelectedList.Add(Pawn);
+        pawn.Select();
+        PawnSelectedList.Add(pawn);
     }
 
-    public void ShiftClickSelect(Pawn Pawn)
+    public void ShiftClickSelect(Pawn pawn)
     {
-        if (!PawnSelectedList.Contains(Pawn) && PawnSelectedList.Count < _maxSelected)
+        if (!PawnSelectedList.Contains(pawn) && PawnSelectedList.Count < _maxSelected)
         {
-            Pawn.Select();
+            pawn.Select();
 
-            PawnSelectedList.Add(Pawn);
+            PawnSelectedList.Add(pawn);
         }
         else
         {
-            Pawn.Deselect();
+            pawn.Deselect();
 
-            PawnSelectedList.Remove(Pawn);
+            PawnSelectedList.Remove(pawn);
         }
     }
 
-    public void DragSelect(Pawn Pawn)
+    public void DragSelect(Pawn pawn)
     {
-        if (!PawnSelectedList.Contains(Pawn) && PawnSelectedList.Count < _maxSelected)
+        if (!PawnSelectedList.Contains(pawn) && PawnSelectedList.Count < _maxSelected)
         {
-            Pawn.Select();
+            pawn.Select();
 
-            PawnSelectedList.Add(Pawn);
+            PawnSelectedList.Add(pawn);
         }
     }
 
     public void DeselectAll()
     {
-        foreach (Pawn Pawn in PawnSelectedList)
+        foreach (Pawn pawn in PawnSelectedList)
         {
-            Pawn.Deselect();
+            pawn.Deselect();
         }
 
         PawnSelectedList.Clear();
     }
 
-    public void SelectEnemy(Pawn Pawn)
+    public void SelectEnemy(Pawn pawn)
     {
-        Pawn.SelectAsEnemy();
-        SelectedEnemyPawn = Pawn;
+        pawn.SelectAsEnemy();
+        SelectedEnemyPawn = pawn;
     }
 
     public void DeselectEnemy()
     {
-        if (SelectedEnemyPawn!=null)
+        if (SelectedEnemyPawn != null)
         {
             SelectedEnemyPawn.Deselect();
             SelectedEnemyPawn = null;

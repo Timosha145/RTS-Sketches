@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5684868555692860852}
+  - component: {fileID: 1503718354642631465}
   - component: {fileID: 3335907718141312587}
   - component: {fileID: 8141851753911554389}
   - component: {fileID: 8913380785685801712}
-  - component: {fileID: 3834749589259534690}
   m_Layer: 0
   m_Name: Pawn
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 656898566055582773}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.605, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5930422518308851931}
@@ -37,6 +37,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1503718354642631465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 656898566055582773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d91b1bb4b36ab404a8207f66e3484a8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ISTEST: 0
+  _rotationSpeed: 4
+  _distanceToSee: 2
+  _distanceToAttack: 1
+  <Team>k__BackingField: {fileID: 0}
+  <Offset>k__BackingField: 0.6
+  StayingPosition: {x: 0, y: 0, z: 0}
 --- !u!195 &3335907718141312587
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -46,7 +65,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 656898566055582773}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.3
+  m_Radius: 0.4
   m_Speed: 1.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -55,8 +74,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 0.8
-  m_BaseOffset: -0.075
+  m_Height: 1
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 2
 --- !u!136 &8141851753911554389
@@ -78,8 +97,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.3
-  m_Height: 0.8
+  m_Radius: 0.4
+  m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!54 &8913380785685801712
@@ -109,25 +128,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3834749589259534690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 656898566055582773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fec2c6bf94491943bce7086aa78c905, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ISTEST: 0
-  _rotationSpeed: 4
-  _distanceToSee: 2
-  _distanceToAttack: 0.75
-  <Team>k__BackingField: {fileID: 0}
-  <Offset>k__BackingField: 1
-  StayingPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &2065360063582352751
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -161,11 +161,16 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2353953888693003746, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     - target: {fileID: 3480725547789617171, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: _pawn
       value: 
-      objectReference: {fileID: 3834749589259534690}
+      objectReference: {fileID: 1503718354642631465}
     - target: {fileID: 3480725547789617171, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: _healthBarUI
@@ -201,6 +206,16 @@ PrefabInstance:
       propertyPath: _bonesArray.Array.data[4]
       value: 
       objectReference: {fileID: 1245183450873466349}
+    - target: {fileID: 3623688974379750236, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
+    - target: {fileID: 4134401758266879593, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: m_RootOrder
@@ -209,17 +224,7 @@ PrefabInstance:
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
-        type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.75
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
@@ -229,7 +234,7 @@ PrefabInstance:
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.45
+      value: 0.55
       objectReference: {fileID: 0}
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
@@ -276,6 +281,16 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7747198887732958203, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
+    - target: {fileID: 7974165544510629853, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

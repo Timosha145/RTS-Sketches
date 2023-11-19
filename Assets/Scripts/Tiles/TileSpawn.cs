@@ -1,5 +1,5 @@
-using UnityEngine;
 using PoplarLib;
+using UnityEngine;
 
 
 public class TileSpawn : ExtendedMonoBehaviour
@@ -24,7 +24,7 @@ public class TileSpawn : ExtendedMonoBehaviour
             if (HandleTimer(ref _timerToSpawn, Team.SpawnRateTime))
             {
                 Pawn spawnedPawn = Instantiate(_pawnPrefab, _spawnPoint.position, Quaternion.identity);
-                //spawnedPawn.SetPropertiesOnce(Team, _gatheringPoint.position);
+                spawnedPawn.SetPropertiesOnce(Team, _gatheringPoint.position);
             }
         }
         else

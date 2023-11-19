@@ -23,7 +23,7 @@ public class TileHearts : TileBase
         {
             foreach (Pawn Pawn in _pawnsInZone)
             {
-                if (Pawn.Health < Pawn.MaxHealth && Pawn.Team == _capturedByTeam)
+                if (Pawn.Health < Pawn.MaxHealth && Pawn.Team == _capturedByTeam && Pawn.IsSitting())
                 {
                     Pawn.ChangeHealth(_healthModifier);
                 }

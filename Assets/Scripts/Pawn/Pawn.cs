@@ -1,13 +1,14 @@
-using PoplarLib;
+﻿using PoplarLib;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Pawn : ExtendedMonoBehaviour
 {
-    [SerializeField] private bool ISTEST;
+    [SerializeField] public bool ISTEST;
     [SerializeField] private float _rotationSpeed = 4f;
-    [SerializeField] private float _distanceToSee = 2f;
+    [SerializeField] private float _distanceToSee = 1.75f;
     [SerializeField] private float _distanceToAttack;
 
     [field: SerializeField] public Team Team { get; private set; }
@@ -33,10 +34,10 @@ public class Pawn : ExtendedMonoBehaviour
 
     private float _timerToSit, _timerToSitMax = 3f;
     private float _lastMoveTime;
-    private float _carvingTime = 0.5f;
+    private float _carvingTime = 10.5f;
     private float _carvingMoveThreshold = 0.01f;
     private float _distanceIgnoreThreshold = 1f;
-    private float _minimumDistanceToMove = 0.5f;
+    private float _minimumDistanceToMove = 0.25f;
     private float _walkRadiusOnTarget = 3f;
     private float _timerToAttack, _timerToAttackMax = 2f;
 
@@ -71,7 +72,7 @@ public class Pawn : ExtendedMonoBehaviour
         Idle,
         Sitting,
         Moving,
-        Attacking, 
+        Attacking,
         PlayingAnimation
     }
 
@@ -180,7 +181,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void MoveToTarget(Vector3 targetPos)
     {
-        if (!IsPositionCloseEnough(transform.position, targetPos, _minimumDistanceToMove))
+        if (!IsPositionCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
         {
             if (_currentState == State.Sitting)
             {
@@ -193,11 +194,19 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void OnAnimationStarted()
     {
+        if (ISTEST)
+        {
+            Debug.Log("Start");
+        }
         _isAnimationPlaying = true;
     }
 
     public void OnAnimationStopped()
     {
+        if (ISTEST)
+        {
+            Debug.Log("End");
+        }
         _isAnimationPlaying = false;
     }
 
@@ -218,7 +227,7 @@ public class Pawn : ExtendedMonoBehaviour
     protected void HandleAttack()
     {
         // Check IF destination of pawn is not too far to start fighting AND distance to the closest enemy pawn is minimum of given value
-        if (IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold) 
+        if (IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
             && TryGetClosestEnemy(_distanceToSee, out _targetPawn))
         {
             if (Vector3.Distance(_targetPawn.transform.position, transform.position) < _distanceToAttack)
@@ -236,7 +245,6 @@ public class Pawn : ExtendedMonoBehaviour
             }
             else
             {
-                // Reset the timer if pawn is gone from the attack distance
                 MoveToTarget(_targetPawn.transform.position);
                 _timerToAttack = 0f;
             }
@@ -250,14 +258,19 @@ public class Pawn : ExtendedMonoBehaviour
     // Checks during moving
     protected void HandleMovement()
     {
+        // During certain animations don't start moving until their end
+        if (_isAnimationPlaying)
+        {
+            return;
+        }
+
         // If target position was set start moving
-        if (_targetPosition != Vector3.zero && !_isAnimationPlaying)
+        if (_targetPosition != Vector3.zero)
         {
             StartedMoving();
         }
 
-        // If pawn has moved
-        if (ShouldMove() && !_isAnimationPlaying)
+        if (ShouldMove())
         {
             _currentState = State.Moving;
             _lastMoveTime = Time.time;
@@ -276,7 +289,7 @@ public class Pawn : ExtendedMonoBehaviour
 
         // If pawn's path is blocked or pawn has reached destination
         if (ShouldStop())
-        {
+        {    
             ResetDestination();
             _currentState = State.Idle;
 
@@ -284,7 +297,6 @@ public class Pawn : ExtendedMonoBehaviour
         }
     }
 
-    // Use event to change _currentState immediately without waiting for the end of the coroutines
     private void Pawn_OnEndedSitting(object sender, EventArgs e)
     {
         _timerToSit = 0f;
@@ -298,7 +310,6 @@ public class Pawn : ExtendedMonoBehaviour
         _lastPosition = transform.position;
         _lastMoveTime = Time.time;
         _targetPosition = Vector3.zero;
-
         OnStartedMoving?.Invoke(this, EventArgs.Empty);
     }
 
@@ -317,13 +328,13 @@ public class Pawn : ExtendedMonoBehaviour
     // If pawn has moved at least on a certain distance return true
     private bool ShouldMove()
     {
-        return Vector3.Distance(_lastPosition, transform.position) > _carvingMoveThreshold && _currentState != State.Attacking;
+        return !IsPositionCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) && _currentState != State.Attacking;
     }
 
     // If pawn's current State is Moving AND the last time it has moved + carving time is less than current Time OR pawn's NavMeshAgent doesn't have a path return true
     private bool ShouldStop()
     {
-        return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || !_navMeshAgent.hasPath);
+        return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position);
     }
 
     private void ResetDestination()
