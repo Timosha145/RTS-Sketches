@@ -1,5 +1,5 @@
 using UnityEngine;
-public class TileHearts : TileBase
+public class TileHealer : TileBase
 {
     [SerializeField] private float _healthModifier;
 

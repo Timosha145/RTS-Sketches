@@ -2865,15 +2865,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7285d9357c9e144948defa0dc1146a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Color>k__BackingField: {r: 0.735849, g: 0, b: 0.56559354, a: 1}
-  <Material>k__BackingField: {fileID: 2100000, guid: 1de25131e6f3d2b47a4c6e1ff5ebd568,
-    type: 2}
-  <Health>k__BackingField: 100
-  <Damage>k__BackingField: 10
-  <MaxPawns>k__BackingField: 0
-  <SpawnRateTime>k__BackingField: 0
-  _maxPawnsBonusModifier: 1
-  _minPawns: 0
+  TeamDataSO: {fileID: 11400000, guid: 8a0e5e8aa2c99184c8d487a793d7a6a4, type: 2}
 --- !u!1001 &380722872
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5577,7 +5569,7 @@ PrefabInstance:
     - target: {fileID: 1503718354642631465, guid: abbe1ef1f75d1044cac34d667cbcec64,
         type: 3}
       propertyPath: ISTEST
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1503718354642631465, guid: abbe1ef1f75d1044cac34d667cbcec64,
         type: 3}
@@ -7988,7 +7980,7 @@ PrefabInstance:
     - target: {fileID: 1503718354642631465, guid: abbe1ef1f75d1044cac34d667cbcec64,
         type: 3}
       propertyPath: ISTEST
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1503718354642631465, guid: abbe1ef1f75d1044cac34d667cbcec64,
         type: 3}
@@ -9290,15 +9282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7285d9357c9e144948defa0dc1146a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Color>k__BackingField: {r: 0.09711419, g: 0, b: 0.7075472, a: 1}
-  <Material>k__BackingField: {fileID: 2100000, guid: d63625a855b2f804a9853e195ae8fc87,
-    type: 2}
-  <Health>k__BackingField: 150
-  <Damage>k__BackingField: 10
-  <MaxPawns>k__BackingField: 4
-  <SpawnRateTime>k__BackingField: 2
-  _maxPawnsBonusModifier: 1
-  _minPawns: 2
+  TeamDataSO: {fileID: 11400000, guid: bcdfd88cc78976a41b87acbaf16265c5, type: 2}
 --- !u!1001 &1435353704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11597,15 +11581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7285d9357c9e144948defa0dc1146a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Color>k__BackingField: {r: 0.5566038, g: 0.034131378, b: 0.034131378, a: 1}
-  <Material>k__BackingField: {fileID: 2100000, guid: 94912741627c6d2488e8583b867139b0,
-    type: 2}
-  <Health>k__BackingField: 190
-  <Damage>k__BackingField: 12
-  <MaxPawns>k__BackingField: 2
-  <SpawnRateTime>k__BackingField: 3
-  _maxPawnsBonusModifier: 1
-  _minPawns: 2
+  TeamDataSO: {fileID: 11400000, guid: c910fcd3c1dbb834b9b9e7676d7ff327, type: 2}
 --- !u!4 &1793675820 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1164812262302617432, guid: a56401a6cabcc7f4387efa1fc6fbfa25,

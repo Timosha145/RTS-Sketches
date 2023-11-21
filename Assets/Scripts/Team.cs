@@ -2,34 +2,29 @@ using UnityEngine;
 
 public class Team : MonoBehaviour
 {
-    [field: SerializeField] public Color Color { get; private set; }
-    [field: SerializeField] public Material Material { get; private set; }
-    [field: SerializeField] public float Health { get; private set; }
-    [field: SerializeField] public float Damage { get; private set; }
-    [field: SerializeField] public float MaxPawns { get; private set; }
-    [field: SerializeField] public float SpawnRateTime { get; private set; }
+    [SerializeField] public TeamDataSO TeamDataSO;
 
-    [SerializeField] private int _maxPawnsBonusModifier = 1;
-    [SerializeField] private float _minPawns;
-
+    public Material Material { get; private set; }
     public float CurrentMaxPawns { get; private set; }
     public int CurrentQuantityOfPawns { get; private set; }
 
     private void Awake()
     {
-        CurrentMaxPawns = _minPawns;
+        CurrentMaxPawns = TeamDataSO.MinPawns;
         CurrentQuantityOfPawns = 0;
-        Material.color = Color;
+
+        Material = new Material(TeamDataSO.DefaultMaterial);
+        Material.color = TeamDataSO.TeamColor;
     }
 
     public void IncreaseMaxPawns()
     {
-        CurrentMaxPawns = Mathf.Clamp(CurrentQuantityOfPawns + _maxPawnsBonusModifier, _minPawns, MaxPawns);
+        CurrentMaxPawns = Mathf.Clamp(CurrentQuantityOfPawns + TeamDataSO.CaptureBonusModifier, TeamDataSO.MinPawns, TeamDataSO.MaxPawns);
     }
 
     public void DescreaseMaxPawns()
     {
-        CurrentMaxPawns = Mathf.Clamp(CurrentQuantityOfPawns - _maxPawnsBonusModifier, _minPawns, MaxPawns);
+        CurrentMaxPawns = Mathf.Clamp(CurrentQuantityOfPawns - TeamDataSO.CaptureBonusModifier, TeamDataSO.MinPawns, TeamDataSO.MaxPawns);
     }
 
     public void IncreaseCurrentQuantityOfPawns()

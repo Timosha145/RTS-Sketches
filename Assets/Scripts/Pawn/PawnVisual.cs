@@ -38,7 +38,7 @@ public class PawnVisual : MonoBehaviour
         _selectedOutline.enabled = false;
 
         _healthBarUI.ChangeWidth(_pawn.MaxHealth);
-        _healthBarUI.ChangeColor(_pawn.Team.Color);
+        _healthBarUI.ChangeColor(_pawn.Team.TeamDataSO.TeamColor);
 
         ChangeBonesMaterial();
     }
@@ -63,6 +63,7 @@ public class PawnVisual : MonoBehaviour
 
     protected void Attack()
     {
+        
         OnAttack?.Invoke(this, EventArgs.Empty);
         _pawn.OnAttackTarget();
     }

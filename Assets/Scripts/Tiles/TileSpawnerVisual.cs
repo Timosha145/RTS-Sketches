@@ -1,9 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TileSpawnVisual : MonoBehaviour
+public class TileSpawnerVisual : MonoBehaviour
 {
-    [SerializeField] private TileSpawn _tile;
+    [SerializeField] private TileSpawner _tile;
     [SerializeField] private Image _background;
     [SerializeField] private Image _foreground;
 
@@ -14,6 +14,6 @@ public class TileSpawnVisual : MonoBehaviour
 
     private void Setup()
     {
-        _foreground.color = _tile.Team.Color;
+        _foreground.color = _tile.Team.TeamDataSO.TeamColor;
     }
 }

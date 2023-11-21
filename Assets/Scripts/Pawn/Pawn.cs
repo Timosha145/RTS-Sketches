@@ -95,11 +95,6 @@ public class Pawn : ExtendedMonoBehaviour
         HandleMovement();
         HandleSitting();
         HandleAttack();
-
-        if (ISTEST)
-        {
-            Debug.Log(_numOfPlatingAnimations);
-        }
     }
 
     private void OnDestroy()
@@ -217,7 +212,7 @@ public class Pawn : ExtendedMonoBehaviour
     // If pawn's current State is Idle, it's State will change to Sitting after certain amount of seconds
     protected void HandleSitting()
     {
-        if (_currentState == State.Idle && HandleTimer(ref _timerToSit, _timerToSitMax))
+        if (_currentState == State.Idle && HandleTimer(ref _timerToSit, _timerToSitMax) && _targetPawn == null)
         {
             _currentState = State.Sitting;
             OnStartedSitting?.Invoke(this, EventArgs.Empty);
@@ -278,7 +273,7 @@ public class Pawn : ExtendedMonoBehaviour
         {
             _currentState = State.Moving;
             _lastMoveTime = Time.time;
-            _lastPosition = transform.position;
+            _lastPosition = transform.position;   
 
             if (ShouldFollowEnemy())
             {
@@ -296,7 +291,6 @@ public class Pawn : ExtendedMonoBehaviour
         {    
             ResetDestination();
             _currentState = State.Idle;
-
             OnEndedMoving?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -380,9 +374,9 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void Setup()
     {
-        MaxHealth = Team.Health;
-        _damage = Team.Damage;
-        Health = Team.Health;
+        MaxHealth = Team.TeamDataSO.Health;
+        _damage = Team.TeamDataSO.Damage;
+        Health = Team.TeamDataSO.Health;
         StayingPosition = transform.position;
 
         if (Player.Instance.Team == Team)
