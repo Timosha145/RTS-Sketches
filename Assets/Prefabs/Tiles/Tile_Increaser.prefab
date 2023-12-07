@@ -278,7 +278,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 87fe17dd2c330ab4d9601594aa69add6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4922f0fb2d369784faefc2c100ff7a55, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -460,7 +460,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 87fe17dd2c330ab4d9601594aa69add6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4922f0fb2d369784faefc2c100ff7a55, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -777,7 +777,7 @@ PrefabInstance:
     - target: {fileID: 3328726271118004307, guid: a56401a6cabcc7f4387efa1fc6fbfa25,
         type: 3}
       propertyPath: m_Name
-      value: Tile_Peaks
+      value: Tile_Increaser
       objectReference: {fileID: 0}
     - target: {fileID: 3328726271118004307, guid: a56401a6cabcc7f4387efa1fc6fbfa25,
         type: 3}

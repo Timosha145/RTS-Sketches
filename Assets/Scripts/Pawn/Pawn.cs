@@ -1,6 +1,5 @@
 ﻿using PoplarLib;
 using System;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -35,12 +34,13 @@ public class Pawn : ExtendedMonoBehaviour
     private int _numOfPlatingAnimations = 0;
     private float _timerToSit, _timerToSitMax = 3f;
     private float _lastMoveTime;
-    private float _carvingTime = 10.5f;
+    private float _carvingTime = 0.5f;
     private float _carvingMoveThreshold = 0.01f;
     private float _distanceIgnoreThreshold = 1f;
     private float _minimumDistanceToMove = 0.25f;
     private float _walkRadiusOnTarget = 3f;
     private float _timerToAttack, _timerToAttackMax = 2f;
+    private float _timerToChangeLastPos, _timerToChangeLastPosMax = 0.3f;
 
     private bool _propertiesAreSet = false;
     private bool _isAnimationPlaying; // Only certain animations change value of this variable
@@ -95,11 +95,6 @@ public class Pawn : ExtendedMonoBehaviour
         HandleMovement();
         HandleSitting();
         HandleAttack();
-
-        if (ISTEST)
-        {
-            Debug.Log("Anim: " + _numOfPlatingAnimations);
-        }
     }
 
     private void OnDestroy()
@@ -228,9 +223,9 @@ public class Pawn : ExtendedMonoBehaviour
 
     protected void HandleAttack()
     {
-        if (IsAnyEnemyCloseEnough())
+        if (IsAnyEnemyCloseEnoughToApproach())
         {
-            if (Vector3.Distance(_targetPawn.transform.position, transform.position) < _distanceToAttack)
+            if (IsAnyEnemyCloseEnoughToFight())
             {
                 ResetDestination();
                 SlerpRotateTowards(_targetPawn.transform.position, _rotationSpeed);
@@ -243,7 +238,7 @@ public class Pawn : ExtendedMonoBehaviour
                     _pawnToFollow = null;
                 }
             }
-            else
+            else if (!ShouldReturnToStayingPos())
             {
                 MoveToTarget(_targetPawn.transform.position);
                 _timerToAttack = 0f;
@@ -271,14 +266,17 @@ public class Pawn : ExtendedMonoBehaviour
         {
             _currentState = State.Moving;
             _lastMoveTime = Time.time;
-            _lastPosition = transform.position;
+            if (HandleTimer(ref _timerToChangeLastPos, _timerToChangeLastPosMax))
+            {
+                _lastPosition = transform.position;
+            }
 
             if (ShouldFollowEnemy())
             {
                 MoveToTarget(_pawnToFollow.transform.position);
                 StayingPosition = _pawnToFollow.transform.position;
             }
-            else if (ShouldReturn())
+            else if (ShouldReturnToStayingPos())
             {
                 MoveToTarget(StayingPosition);
             }
@@ -286,10 +284,6 @@ public class Pawn : ExtendedMonoBehaviour
 
         if (ShouldStop())
         {
-            if (ISTEST)
-            {
-                Debug.Log("STOP: " + (_navMeshAgent.destination == transform.position));
-            }
             ResetDestination();
             _currentState = State.Idle;
             OnEndedMoving?.Invoke(this, EventArgs.Empty);
@@ -305,19 +299,35 @@ public class Pawn : ExtendedMonoBehaviour
     private void StartedMoving()
     {
         _navMeshAgent.destination = _targetPosition;
-        _lastPosition = transform.position;
-        _lastMoveTime = Time.time;
-        _targetPosition = Vector3.zero;
-        OnStartedMoving?.Invoke(this, EventArgs.Empty);
+        if (_currentState != State.Moving)
+        {
+            _lastPosition = transform.position;
+            _lastMoveTime = Time.time;
+            _targetPosition = Vector3.zero;
+            _currentState = State.Moving;
+            OnStartedMoving?.Invoke(this, EventArgs.Empty);
+        }
     }
 
-    private bool IsAnyEnemyCloseEnough()
+    private bool IsAnyEnemyCloseEnoughToApproach()
     {
         return IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
             && TryGetClosestEnemy(_distanceToSee, out _targetPawn);
     }
 
-    private bool ShouldReturn()
+    private bool IsAnyEnemyCloseEnoughToFight()
+    {
+        if (_targetPawn == null)
+        {
+            return false;
+        }
+        else
+        {
+            return IsPositionCloseEnough(_targetPawn.transform.position, transform.position, _distanceToAttack);
+        }
+    }
+
+    private bool ShouldReturnToStayingPos()
     {
         return !IsPositionCloseEnough(StayingPosition, transform.position, _walkRadiusOnTarget);
     }
@@ -334,6 +344,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool ShouldStop()
     {
+
         return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position);
     }
 
