@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -44,11 +43,11 @@ public class Player : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, _groundLayerMask))
         {
-            if (_pawnSelections.SelectedEnemyPawn!=null)
+            if (_pawnSelections.SelectedEnemyPawn != null)
             {
-                foreach (PawnAI PawnAI in _pawnSelections.PawnSelectedList)
+                foreach (Pawn pawn in _pawnSelections.PawnSelectedList)
                 {
-                    PawnAI.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
+                    pawn.FollowEnemy(_pawnSelections.SelectedEnemyPawn);
                 }
             }
             else
@@ -59,10 +58,10 @@ public class Player : MonoBehaviour
             //switch (_order)
             //{
             //    case Order.CircleTarget:
-            //        PawnAI.CircleTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
+            //        Pawn.CircleTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
             //        break;
             //    case Order.LineUpOnTarget:
-            //        PawnAI.LineUpPawnsOnTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
+            //        Pawn.LineUpPawnsOnTarget(PawnSelections.Instance.PawnSelectedList, raycastHit.point);
             //        break;
             //    default:
             //        break;

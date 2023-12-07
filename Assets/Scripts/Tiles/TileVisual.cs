@@ -16,7 +16,7 @@ public class TileVisual : MonoBehaviour
 
     private void Tile_OnCaptured(object sender, TileBase.CapturedEventArgs e)
     {
-        _background.color = e.Team.Color;
+        _background.color = e.Team.TeamDataSO.TeamColor;
     }
 
     private void Tile_OnChangeCaptureProgress(object sender, TileBase.CaptureProgressEventArgs e)
@@ -26,6 +26,6 @@ public class TileVisual : MonoBehaviour
 
     private void Tile_OnCapturingTeamChanged(object sender, TileBase.CapturedEventArgs e)
     {
-        _foreground.color = e.Team.Color;
+        _foreground.color = e.Team.TeamDataSO.TeamColor;
     }
 }

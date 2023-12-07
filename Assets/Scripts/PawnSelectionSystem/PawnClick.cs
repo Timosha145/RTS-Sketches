@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PawnClick : MonoBehaviour
@@ -23,16 +22,16 @@ public class PawnClick : MonoBehaviour
             // Ray hit a clickable object
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI))
+                if (raycastHit.collider.TryGetComponent(out Pawn pawn))
                 {
-                    PawnSelections.Instance.ShiftClickSelect(PawnAI);
+                    PawnSelections.Instance.ShiftClickSelect(pawn);
                 }
             }
             else
             {
-                if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI))
+                if (raycastHit.collider.TryGetComponent(out Pawn pawn))
                 {
-                    PawnSelections.Instance.ClickSelect(PawnAI);
+                    PawnSelections.Instance.ClickSelect(pawn);
                 }
             }
         }
@@ -56,14 +55,14 @@ public class PawnClick : MonoBehaviour
         _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(_ray, out RaycastHit raycastHit, float.MaxValue, PawnSelections.Instance.EnemyPawnLayer))
         {
-            // Reselect enemy PawnAI IF collider object has a PawnAI component AND previous call was not on the same gameobject
-            if (raycastHit.collider.TryGetComponent(out PawnAI PawnAI) && PawnSelections.Instance.SelectedEnemyPawn != PawnAI)
+            // Reselect enemy pawn IF collider object has a pawn component AND previous call was not on the same gameobject
+            if (raycastHit.collider.TryGetComponent(out Pawn pawn) && PawnSelections.Instance.SelectedEnemyPawn != pawn)
             {
                 PawnSelections.Instance.DeselectEnemy();
 
-                if (PawnAI.Team != Player.Instance.Team)
+                if (pawn.Team != Player.Instance.Team)
                 {
-                    PawnSelections.Instance.SelectEnemy(PawnAI);
+                    PawnSelections.Instance.SelectEnemy(pawn);
                 }
             }
         }

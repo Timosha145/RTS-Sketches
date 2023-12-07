@@ -79,12 +79,12 @@ public class DragClick : MonoBehaviour
 
     private void SelectPawns()
     {
-        foreach (PawnAI PawnAI in PawnSelections.Instance.PawnList)
+        foreach (Pawn pawn in PawnSelections.Instance.PawnList)
         {
-            if (_selectionBox.Contains(Camera.main.WorldToScreenPoint(PawnAI.transform.position)) && PawnAI.Team == Player.Instance.Team)
+            if (_selectionBox.Contains(Camera.main.WorldToScreenPoint(pawn.transform.position)) && pawn.Team == Player.Instance.Team)
             {
-                // If any PawnAI is within the selection add them to selection
-                PawnSelections.Instance.DragSelect(PawnAI);
+                // If any pawn is within the selection add them to selection
+                PawnSelections.Instance.DragSelect(pawn);
             }
         }
     }

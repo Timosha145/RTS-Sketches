@@ -2158,7 +2158,7 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 1.65
-    functionName: AnimationStopped
+    functionName: AttackEnded
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

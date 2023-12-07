@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LookAtCamera : MonoBehaviour
@@ -16,7 +14,7 @@ public class LookAtCamera : MonoBehaviour
 
     private void LateUpdate()
     {
-        switch(_mode)
+        switch (_mode)
         {
             case Mode.LookAt:
                 transform.LookAt(Camera.main.transform);

@@ -50,11 +50,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ISTEST: 0
-  <Team>k__BackingField: {fileID: 0}
   _rotationSpeed: 4
-  _distanceToAttack: 1
   _distanceToSee: 2
-  TargetPosition: {x: 0, y: 0, z: 0}
+  _distanceToAttack: 0.7
+  <Team>k__BackingField: {fileID: 0}
+  <Offset>k__BackingField: 0.6
+  StayingPosition: {x: 0, y: 0, z: 0}
 --- !u!195 &3335907718141312587
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -74,7 +75,7 @@ NavMeshAgent:
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 1
-  m_BaseOffset: -0.075
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 2
 --- !u!136 &8141851753911554389
@@ -160,6 +161,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2353953888693003746, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     - target: {fileID: 3480725547789617171, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: _pawn
@@ -200,10 +206,25 @@ PrefabInstance:
       propertyPath: _bonesArray.Array.data[4]
       value: 
       objectReference: {fileID: 1245183450873466349}
+    - target: {fileID: 3623688974379750236, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
+    - target: {fileID: 4134401758266879593, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
         type: 3}
@@ -255,6 +276,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5684868555692860852, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747198887732958203, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
+    - target: {fileID: 7974165544510629853, guid: 2bc9991a6789b9f4f8e5c25951ea8ac4,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3cd7474b552b95e42831846703412ff2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

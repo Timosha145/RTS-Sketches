@@ -1,14 +1,14 @@
-using UnityEngine;
 using PoplarLib;
+using UnityEngine;
 
 
-public class TileSpawn : ExtendedMonoBehaviour
+public class TileSpawner : ExtendedMonoBehaviour
 {
     [field: SerializeField] public Team Team { get; private set; }
 
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Transform _gatheringPoint;
-    [SerializeField] private PawnAI _pawnPrefab;
+    [SerializeField] private Pawn _pawnPrefab;
 
     private float _timerToSpawn;
 
@@ -21,9 +21,9 @@ public class TileSpawn : ExtendedMonoBehaviour
     {
         if (Team.CurrentQuantityOfPawns < Team.CurrentMaxPawns)
         {
-            if (HandleTimer(ref _timerToSpawn, Team.SpawnRateTime))
+            if (HandleTimer(ref _timerToSpawn, Team.TeamDataSO.SpawnRateTime))
             {
-                PawnAI spawnedPawn = Instantiate(_pawnPrefab, _spawnPoint.position, Quaternion.identity);
+                Pawn spawnedPawn = Instantiate(_pawnPrefab, _spawnPoint.position, Quaternion.identity);
                 spawnedPawn.SetPropertiesOnce(Team, _gatheringPoint.position);
             }
         }

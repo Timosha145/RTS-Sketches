@@ -1,4 +1,4 @@
-public class TilePeaks : TileBase
+public class TileIncreaser : TileBase
 {
     private void Start()
     {

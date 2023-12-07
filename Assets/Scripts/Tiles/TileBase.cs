@@ -1,7 +1,7 @@
+using PoplarLib;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using PoplarLib;
 
 public class TileBase : ExtendedMonoBehaviour
 {
@@ -22,7 +22,7 @@ public class TileBase : ExtendedMonoBehaviour
         public Team Team;
     }
 
-    protected List<PawnAI> _pawnsInZone = new List<PawnAI>();
+    protected List<Pawn> _pawnsInZone = new List<Pawn>();
     protected Team _capturedByTeam;
     protected Team _capturingTeam;
 
@@ -37,24 +37,24 @@ public class TileBase : ExtendedMonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out PawnAI PawnAI))
+        if (other.TryGetComponent(out Pawn Pawn))
         {
-            _pawnsInZone.Add(PawnAI);
+            _pawnsInZone.Add(Pawn);
 
             // If capturing progress is zero assign capturing team to the tile
             if (_captureProgress == 0)
             {
-                _capturingTeam = PawnAI.Team;
-                ChangeCapturingTeam(PawnAI.Team);
+                _capturingTeam = Pawn.Team;
+                ChangeCapturingTeam(Pawn.Team);
             }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out PawnAI PawnAI))
+        if (other.TryGetComponent(out Pawn Pawn))
         {
-            _pawnsInZone.Remove(PawnAI);
+            _pawnsInZone.Remove(Pawn);
 
             if (_pawnsInZone.Count == 0)
             {
@@ -67,9 +67,9 @@ public class TileBase : ExtendedMonoBehaviour
     {
         int bonus = 0;
 
-        foreach (PawnAI PawnAI in _pawnsInZone)
+        foreach (Pawn Pawn in _pawnsInZone)
         {
-            if (PawnAI.IsSitting())
+            if (Pawn.IsSitting())
             {
                 bonus++;
             }
@@ -144,10 +144,10 @@ public class TileBase : ExtendedMonoBehaviour
 
     private bool CheckPawnsSameTeam()
     {
-        // If each PawnAI in the list is from the same team as the first PawnAI in the list return true
-        foreach (PawnAI PawnAI in _pawnsInZone)
+        // If each Pawn in the list is from the same team as the first Pawn in the list return true
+        foreach (Pawn Pawn in _pawnsInZone)
         {
-            if (_pawnsInZone[0].Team != PawnAI.Team)
+            if (_pawnsInZone[0].Team != Pawn.Team)
             {
                 return false;
             }
@@ -158,10 +158,10 @@ public class TileBase : ExtendedMonoBehaviour
 
     private bool CheckIfIsPawnsTeam(Team team)
     {
-        // If capturing team is same as each PawnAI's team return true
-        foreach (PawnAI PawnAI in _pawnsInZone)
+        // If capturing team is same as each Pawn's team return true
+        foreach (Pawn Pawn in _pawnsInZone)
         {
-            if (PawnAI.Team != team)
+            if (Pawn.Team != team)
             {
                 return false;
             }
