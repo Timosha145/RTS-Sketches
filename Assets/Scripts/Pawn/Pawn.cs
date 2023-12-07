@@ -43,7 +43,7 @@ public class Pawn : ExtendedMonoBehaviour
     private float _timerToAttack, _timerToAttackMax = 2f;
 
     private bool _propertiesAreSet = false;
-    private bool _isAnimationPlaying;
+    private bool _isAnimationPlaying; // Only certain animations change value of this variable
 
     private Vector3 _targetPosition = Vector3.zero;
     private Vector3 _lastPosition;
@@ -95,6 +95,11 @@ public class Pawn : ExtendedMonoBehaviour
         HandleMovement();
         HandleSitting();
         HandleAttack();
+
+        if (ISTEST)
+        {
+            Debug.Log("Anim: " + _numOfPlatingAnimations);
+        }
     }
 
     private void OnDestroy()
@@ -120,7 +125,6 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void FollowEnemy(Pawn enemyPawn)
     {
-        // If selected enemy is not already somehow connected with current pawn
         if (_targetPawn != enemyPawn)
         {
             _pawnToFollow = enemyPawn;
@@ -209,7 +213,6 @@ public class Pawn : ExtendedMonoBehaviour
         }
     }
 
-    // If pawn's current State is Idle, it's State will change to Sitting after certain amount of seconds
     protected void HandleSitting()
     {
         if (_currentState == State.Idle && HandleTimer(ref _timerToSit, _timerToSitMax) && _targetPawn == null)
@@ -225,9 +228,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     protected void HandleAttack()
     {
-        // Check IF destination of pawn is not too far to start fighting AND distance to the closest enemy pawn is minimum of given value
-        if (IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
-            && TryGetClosestEnemy(_distanceToSee, out _targetPawn))
+        if (IsAnyEnemyCloseEnough())
         {
             if (Vector3.Distance(_targetPawn.transform.position, transform.position) < _distanceToAttack)
             {
@@ -254,16 +255,13 @@ public class Pawn : ExtendedMonoBehaviour
         }
     }
 
-    // Checks during moving
     protected void HandleMovement()
     {
-        // During certain animations don't start moving until their end
         if (_isAnimationPlaying)
         {
             return;
         }
 
-        // If target position was set start moving
         if (_targetPosition != Vector3.zero)
         {
             StartedMoving();
@@ -273,7 +271,7 @@ public class Pawn : ExtendedMonoBehaviour
         {
             _currentState = State.Moving;
             _lastMoveTime = Time.time;
-            _lastPosition = transform.position;   
+            _lastPosition = transform.position;
 
             if (ShouldFollowEnemy())
             {
@@ -286,9 +284,12 @@ public class Pawn : ExtendedMonoBehaviour
             }
         }
 
-        // If pawn's path is blocked or pawn has reached destination
         if (ShouldStop())
-        {    
+        {
+            if (ISTEST)
+            {
+                Debug.Log("STOP: " + (_navMeshAgent.destination == transform.position));
+            }
             ResetDestination();
             _currentState = State.Idle;
             OnEndedMoving?.Invoke(this, EventArgs.Empty);
@@ -298,10 +299,9 @@ public class Pawn : ExtendedMonoBehaviour
     private void Pawn_OnEndedSitting(object sender, EventArgs e)
     {
         _timerToSit = 0f;
-        _currentState = State.Moving;
+        _currentState = State.Idle;
     }
 
-    // Do something at first move
     private void StartedMoving()
     {
         _navMeshAgent.destination = _targetPosition;
@@ -311,25 +311,27 @@ public class Pawn : ExtendedMonoBehaviour
         OnStartedMoving?.Invoke(this, EventArgs.Empty);
     }
 
-    // If pawn is too far from target point, go back
+    private bool IsAnyEnemyCloseEnough()
+    {
+        return IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
+            && TryGetClosestEnemy(_distanceToSee, out _targetPawn);
+    }
+
     private bool ShouldReturn()
     {
         return !IsPositionCloseEnough(StayingPosition, transform.position, _walkRadiusOnTarget);
     }
 
-    // If pawn to follow is not null AND pawn is not too close to following pawn
     private bool ShouldFollowEnemy()
     {
         return _pawnToFollow != null && !IsPositionCloseEnough(_pawnToFollow.transform.position, transform.position, _distanceIgnoreThreshold);
     }
 
-    // If pawn has moved at least on a certain distance return true
     private bool ShouldMove()
     {
         return !IsPositionCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) && _currentState != State.Attacking;
     }
 
-    // If pawn's current State is Moving AND the last time it has moved + carving time is less than current Time OR pawn's NavMeshAgent doesn't have a path return true
     private bool ShouldStop()
     {
         return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position);
@@ -344,7 +346,6 @@ public class Pawn : ExtendedMonoBehaviour
     {
         targetPawn = null;
 
-        // In priority is pawn that was selected to follow, so if it's not null, set it as a target
         if (_pawnToFollow != null)
         {
             targetPawn = _pawnToFollow;
@@ -353,7 +354,6 @@ public class Pawn : ExtendedMonoBehaviour
         {
             foreach (Pawn pawn in PawnSelections.Instance.PawnList)
             {
-                // Distance between this pawn and current pawn from the list that is not from the same team
                 if (pawn.Team != Team && IsPositionCloseEnough(pawn.transform.position, transform.position, seeingDistance))
                 {
                     seeingDistance = Vector3.Distance(pawn.transform.position, transform.position);
