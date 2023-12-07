@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator)), RequireComponent(typeof(Outline))]
@@ -11,7 +9,7 @@ public class PawnVisual : MonoBehaviour
     private const string IS_SITTING = "IsSitting";
     private readonly string[] ATTACK_TRIGGER_ARRAY = new string[] { "OnAttack_1" };
 
-    [SerializeField] private PawnAI _pawn;
+    [SerializeField] private Pawn _pawn;
     [SerializeField] private Transform[] _bonesArray;
     [SerializeField] private HealthBarUI _healthBarUI;
 
@@ -40,12 +38,12 @@ public class PawnVisual : MonoBehaviour
         _selectedOutline.enabled = false;
 
         _healthBarUI.ChangeWidth(_pawn.MaxHealth);
-        _healthBarUI.ChangeColor(_pawn.Team.Color);
+        _healthBarUI.ChangeColor(_pawn.Team.TeamDataSO.TeamColor);
 
         ChangeBonesMaterial();
     }
 
-    private void Pawn_OnHealthChanged(object sender, PawnAI.OnHealthChangedEventArgs e)
+    private void Pawn_OnHealthChanged(object sender, Pawn.OnHealthChangedEventArgs e)
     {
         _healthBarUI.UpdateHealthBar(_pawn.MaxHealth, e.Health);
     }
@@ -65,18 +63,25 @@ public class PawnVisual : MonoBehaviour
 
     protected void Attack()
     {
+        
         OnAttack?.Invoke(this, EventArgs.Empty);
         _pawn.OnAttackTarget();
     }
 
+    protected void AttackEnded()
+    {
+        _pawn.OnAttackEnd();
+        AnimationStopped();
+    }
+
     protected void AnimationStopped()
     {
-        _pawn.AnimationIsNotPlaying();
+        _pawn.OnAnimationStopped();
     }
 
     protected void AnimationStarted()
     {
-        _pawn.AnimationIsPlaying();
+        _pawn.OnAnimationStarted();
     }
 
     private void Pawn_OnAttack(object sender, System.EventArgs e)
@@ -93,6 +98,7 @@ public class PawnVisual : MonoBehaviour
 
     private void Pawn_OnStartedSitting(object sender, System.EventArgs e)
     {
+        AnimationStarted();
         _animator.SetBool(IS_SITTING, true);
     }
 
@@ -101,7 +107,7 @@ public class PawnVisual : MonoBehaviour
         _selectedOutline.enabled = false;
     }
 
-    private void Pawn_OnSelected(object sender, PawnAI.OnSelectedEventArgs e)
+    private void Pawn_OnSelected(object sender, Pawn.OnSelectedEventArgs e)
     {
         _selectedOutline.OutlineColor = e.Color;
         _selectedOutline.enabled = true;
