@@ -12,10 +12,29 @@ public class Bot : ExtendedMonoBehaviour
     private float _scorePerPawn;
     private Team _team;
 
+    private class Group
+    {
+        public List<Pawn> Pawns { get; }
+        public int MaxPawns { get; }
+        public Vector3 Destination { get; }
+
+        public Group(List<Pawn> pawns, int maxPawns, Vector3 destination)
+        {
+            Pawns = pawns;
+            MaxPawns = maxPawns;
+            Destination = destination;
+        }
+
+        public bool IsGroupFull()
+        {
+            return Pawns.Count < MaxPawns;
+        }
+    }
+
     private void Start()
     {
-        _scorePerPawn = _team.TeamDataSO.Health + _team.TeamDataSO.Damage;
         _team = GetComponent<Team>();
+        _scorePerPawn = _team.TeamDataSO.Health + _team.TeamDataSO.Damage;
     }
 
     private void Update()
@@ -34,40 +53,51 @@ public class Bot : ExtendedMonoBehaviour
             return;
         }
 
-        List<Vector3> destinationsForPawns = new List<Vector3>();
-        List<List<Pawn>> formedPawnGroups = new List<List<Pawn>>();
+        List<TileBase> tilesToCaptureForPawns = new List<TileBase>();
+        List<Group> formedPawnGroups = new List<Group>();
         List<Pawn> availablePawns = _team.PawnsInTeam;
+        List<Vector3> excludeTilePositions = new List<Vector3>();
 
         foreach (Pawn pawn in availablePawns)
         {
-            Vector3 closestUncapturedTilePos = GetClosestUncapturedTilePos(pawn.transform.position);
+            RepeatIteration:
+                TileBase closestUncapturedTile = GetClosestUncapturedTilePos(pawn.transform.position, excludeTilePositions);
 
-            if (IsPositionCloseEnough(pawn.GetDestanation(), closestUncapturedTilePos, _orderPosThreshold))
-            {
-                continue;
-            }
+                if (IsPositionCloseEnough(pawn.GetDestanation(), closestUncapturedTile.transform.position, _orderPosThreshold))
+                {
+                    continue;
+                }
 
-            if (!destinationsForPawns.Contains(closestUncapturedTilePos))
-            {
-                destinationsForPawns.Add(closestUncapturedTilePos);
-                formedPawnGroups.Add(new List<Pawn> { pawn });
-            } 
-            else
-            {
-                List<Pawn> group = formedPawnGroups[destinationsForPawns.FindIndex(pos => pos == closestUncapturedTilePos)];
+                if (!tilesToCaptureForPawns.Contains(closestUncapturedTile))
+                {
+                    Group group = new Group(new List<Pawn> { pawn }, GetBalancedNumOfPawnsToSendCapturing(closestUncapturedTile), closestUncapturedTile.transform.position);
 
+                    tilesToCaptureForPawns.Add(closestUncapturedTile);
+                    formedPawnGroups.Add(group);
+                } 
+                else
+                {
+                    Group group = formedPawnGroups[tilesToCaptureForPawns.FindIndex(tile => tile == closestUncapturedTile)];
 
-                //.Add(pawn);
+                    if (group.IsGroupFull())
+                    {
+                        excludeTilePositions.Add(group.Destination);
+                        goto RepeatIteration;
+                    }
+                    else
+                    {
+                        group.Pawns.Add(pawn);
+                    }
             }
         }
 
         for (int i = 0; i < formedPawnGroups.Count; i++)
         {
-            PawnTask.LineUpPawnsOnTarget(formedPawnGroups[i], destinationsForPawns[i]);
+            PawnTask.LineUpPawnsOnTarget(formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
         }
 
         formedPawnGroups.Clear();
-        destinationsForPawns.Clear();
+        tilesToCaptureForPawns.Clear();
     }
 
     private int GetBalancedNumOfPawnsToSendCapturing(TileBase tileToCapture)
@@ -101,14 +131,14 @@ public class Bot : ExtendedMonoBehaviour
         return enemyPawnsTotalScore;
     }
 
-    private Vector3 GetClosestUncapturedTilePos(Vector3 startPos)
+    private TileBase GetClosestUncapturedTilePos(Vector3 startPos, List<Vector3> excludePos)
     {
-        Vector3 closestTilePos = Vector3.zero;
+        TileBase closestTile = new TileBase();
         float closestDistance = float.MaxValue;
 
         foreach (TileBase tile in GameManager.Instance.Tiles)
         {
-            if (!_team.CapturedTiles.Contains(tile))
+            if (!_team.CapturedTiles.Contains(tile) && !excludePos.Contains(tile.transform.position))
             {
                 Vector3 tilePos = tile.transform.position;
                 float distance = Vector3.Distance(startPos, tilePos);
@@ -116,11 +146,11 @@ public class Bot : ExtendedMonoBehaviour
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestTilePos = tilePos;
+                    closestTile = tile;
                 }
             }
         }
 
-        return closestTilePos;
+        return closestTile;
     }
 }
