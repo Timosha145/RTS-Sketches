@@ -58,12 +58,10 @@ public class PawnVisual : MonoBehaviour
         _pawn.OnEndedSitting -= Pawn_OnEndedSitting;
         _pawn.OnAttack -= Pawn_OnAttack;
         _pawn.OnHealthChanged -= Pawn_OnHealthChanged;
-
     }
 
     protected void Attack()
     {
-        
         OnAttack?.Invoke(this, EventArgs.Empty);
         _pawn.OnAttackTarget();
     }
@@ -122,7 +120,6 @@ public class PawnVisual : MonoBehaviour
     {
         _animator.SetBool(IS_MOVING, true);
     }
-
 
     // Getting each editable bone's transform and changing it's material as the team's one
     private void ChangeBonesMaterial()

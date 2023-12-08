@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d91b1bb4b36ab404a8207f66e3484a8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ISTEST: 0
+  _numberOfHitsPerAttack: 2
   _rotationSpeed: 4
   _distanceToSee: 2
   _distanceToAttack: 0.7

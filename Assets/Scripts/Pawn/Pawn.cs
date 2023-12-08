@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 public class Pawn : ExtendedMonoBehaviour
 {
-    [SerializeField] public bool ISTEST;
+    [SerializeField] private bool ISTEST;
+    [SerializeField] private int _numberOfHitsPerAttack;
     [SerializeField] private float _rotationSpeed = 4f;
     [SerializeField] private float _distanceToSee = 1.75f;
     [SerializeField] private float _distanceToAttack;
@@ -142,7 +143,7 @@ public class Pawn : ExtendedMonoBehaviour
     {
         if (_targetPawn != null)
         {
-            _targetPawn.ChangeHealth(-Math.Abs(_damage));
+            _targetPawn.ChangeHealth(-Math.Abs(_damage / _numberOfHitsPerAttack));
         }
     }
 
@@ -252,8 +253,9 @@ public class Pawn : ExtendedMonoBehaviour
 
     protected void HandleMovement()
     {
-        if (_isAnimationPlaying)
+        if (_isAnimationPlaying || _currentState == State.Sitting)
         {
+            _navMeshAgent.destination = transform.position;
             return;
         }
 
@@ -339,7 +341,8 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool ShouldMove()
     {
-        return !IsPositionCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) && _currentState != State.Attacking;
+        return !IsPositionCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) 
+            && _currentState == State.Moving;
     }
 
     private bool ShouldStop()
