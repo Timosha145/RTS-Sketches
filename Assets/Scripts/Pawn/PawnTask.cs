@@ -21,9 +21,7 @@ public static class PawnTask
             Vector3 offsetFromCenter = new Vector3((row - halfRows) * 1, 0, (col - halfCols) * pawn.Offset);
             Vector3 posInLine = centerPoint + offsetFromCenter;
 
-            pawn.MoveToTarget(posInLine);
-            pawn.StayingPosition = posInLine;
-            pawn.StopFollowing();
+            pawn.OrderToMove(posInLine);
         }
     }
 
@@ -40,9 +38,7 @@ public static class PawnTask
                 centerPoint.z + radius * Mathf.Sin(2 * Mathf.PI * pawnIndex / pawnList.Count)
             );
 
-            pawn.MoveToTarget(posInCircle);
-            pawn.StayingPosition = posInCircle;
-            pawn.StopFollowing();
+            pawn.OrderToMove(posInCircle);
         }
     }
 }

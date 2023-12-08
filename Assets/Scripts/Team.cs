@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Team : MonoBehaviour
@@ -5,13 +6,14 @@ public class Team : MonoBehaviour
     [SerializeField] public TeamDataSO TeamDataSO;
 
     public Material Material { get; private set; }
-    public float CurrentMaxPawns { get; private set; }
-    public int CurrentQuantityOfPawns { get; private set; }
+    public List<Pawn> PawnsInTeam { get; private set; }
+    public int CurrentMaxPawns { get; private set; }
+    public int CurrentQuantityOfPawns { get { return PawnsInTeam.Count; } }
 
     private void Awake()
     {
         CurrentMaxPawns = TeamDataSO.MinPawns;
-        CurrentQuantityOfPawns = 0;
+        PawnsInTeam = new List<Pawn>();
 
         Material = new Material(TeamDataSO.DefaultMaterial);
         Material.color = TeamDataSO.TeamColor;
@@ -27,13 +29,13 @@ public class Team : MonoBehaviour
         CurrentMaxPawns = Mathf.Clamp(CurrentQuantityOfPawns - TeamDataSO.CaptureBonusModifier, TeamDataSO.MinPawns, TeamDataSO.MaxPawns);
     }
 
-    public void IncreaseCurrentQuantityOfPawns()
+    public void AddPawn(Pawn pawn)
     {
-        CurrentQuantityOfPawns++;
+        PawnsInTeam.Add(pawn);
     }
 
-    public void DescreaseCurrentQuantityOfPawns()
+    public void RemovePawn(Pawn pawn)
     {
-        CurrentQuantityOfPawns--;
+        PawnsInTeam.Remove(pawn);
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   <Name>k__BackingField: Pinkies
   <TeamColor>k__BackingField: {r: 0.6415094, g: 0, b: 0.56356907, a: 1}
   <Health>k__BackingField: 100
-  <Damage>k__BackingField: 20
+  <Damage>k__BackingField: 30
   <SpawnRateTime>k__BackingField: 3
   <CaptureBonusModifier>k__BackingField: 2
   <MaxPawns>k__BackingField: 10

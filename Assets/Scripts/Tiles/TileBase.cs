@@ -35,6 +35,11 @@ public class TileBase : ExtendedMonoBehaviour
         _timerToCaptureMax = _timeToCapture;
     }
 
+    protected void Start()
+    {
+        GameManager.Instance.InitTile(this);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.TryGetComponent(out Pawn Pawn))

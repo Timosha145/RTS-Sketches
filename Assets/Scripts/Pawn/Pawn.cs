@@ -21,8 +21,6 @@ public class Pawn : ExtendedMonoBehaviour
     public event EventHandler OnStartedSitting, OnEndedSitting;
     public event EventHandler OnAttack;
 
-    [HideInInspector] public Vector3 StayingPosition;
-
     public float Health { get; protected set; }
     public float MaxHealth { get; protected set; }
 
@@ -48,6 +46,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private Vector3 _targetPosition = Vector3.zero;
     private Vector3 _lastPosition;
+    private Vector3 _stayingPosition;
 
     public class OnSelectedEventArgs : EventArgs
     {
@@ -87,7 +86,7 @@ public class Pawn : ExtendedMonoBehaviour
     private void Start()
     {
         OnEndedSitting += Pawn_OnEndedSitting;
-        Team.IncreaseCurrentQuantityOfPawns();
+        Team.AddPawn(this);
         Setup();
     }
 
@@ -100,13 +99,18 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void OnDestroy()
     {
-        Team.DescreaseCurrentQuantityOfPawns();
+        Team.RemovePawn(this);
         PawnSelections.Instance.PawnList.Remove(this);
 
         if (PawnSelections.Instance.SelectedEnemyPawn == this)
         {
             PawnSelections.Instance.DeselectEnemy();
         }
+    }
+
+    public State GetState()
+    {
+        return _currentState;
     }
 
     public void SetPropertiesOnce(Team team, Vector3 targetPos)
@@ -180,17 +184,11 @@ public class Pawn : ExtendedMonoBehaviour
         _pawnToFollow = null;
     }
 
-    public void MoveToTarget(Vector3 targetPos)
+    public void OrderToMove(Vector3 targetPos)
     {
-        if (!IsPositionCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
-        {
-            if (_currentState == State.Sitting)
-            {
-                OnEndedSitting?.Invoke(this, EventArgs.Empty);
-            }
-
-            _targetPosition = targetPos;
-        }
+        _stayingPosition = targetPos;
+        MoveToTarget(targetPos);
+        StopFollowing();
     }
 
     public void OnAnimationStarted()
@@ -268,6 +266,7 @@ public class Pawn : ExtendedMonoBehaviour
         {
             _currentState = State.Moving;
             _lastMoveTime = Time.time;
+
             if (HandleTimer(ref _timerToChangeLastPos, _timerToChangeLastPosMax))
             {
                 _lastPosition = transform.position;
@@ -276,11 +275,11 @@ public class Pawn : ExtendedMonoBehaviour
             if (ShouldFollowEnemy())
             {
                 MoveToTarget(_pawnToFollow.transform.position);
-                StayingPosition = _pawnToFollow.transform.position;
+                _stayingPosition = _pawnToFollow.transform.position;
             }
             else if (ShouldReturnToStayingPos())
             {
-                MoveToTarget(StayingPosition);
+                MoveToTarget(_stayingPosition);
             }
         }
 
@@ -296,6 +295,19 @@ public class Pawn : ExtendedMonoBehaviour
     {
         _timerToSit = 0f;
         _currentState = State.Idle;
+    }
+
+    private void MoveToTarget(Vector3 targetPos)
+    {
+        if (!IsPositionCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
+        {
+            if (_currentState == State.Sitting)
+            {
+                OnEndedSitting?.Invoke(this, EventArgs.Empty);
+            }
+
+            _targetPosition = targetPos;
+        }
     }
 
     private void StartedMoving()
@@ -331,7 +343,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool ShouldReturnToStayingPos()
     {
-        return !IsPositionCloseEnough(StayingPosition, transform.position, _walkRadiusOnTarget);
+        return !IsPositionCloseEnough(_stayingPosition, transform.position, _walkRadiusOnTarget);
     }
 
     private bool ShouldFollowEnemy()
@@ -391,7 +403,7 @@ public class Pawn : ExtendedMonoBehaviour
         MaxHealth = Team.TeamDataSO.Health;
         _damage = Team.TeamDataSO.Damage;
         Health = Team.TeamDataSO.Health;
-        StayingPosition = transform.position;
+        _stayingPosition = transform.position;
 
         if (Player.Instance.Team == Team)
         {

@@ -12,6 +12,7 @@ public class TileHealer : TileBase
         HandleHealing();
     }
 
+
     private void HandleHealing()
     {
         if (_capturedByTeam != _capturingTeam)

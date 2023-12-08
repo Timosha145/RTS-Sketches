@@ -1,7 +1,8 @@
 public class TileIncreaser : TileBase
 {
-    private void Start()
+    private new void Start()
     {
+        base.Start();
         OnCaptured += TilePeaks_OnCaptured;
     }
 

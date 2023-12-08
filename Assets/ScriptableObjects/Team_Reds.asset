@@ -15,7 +15,7 @@ MonoBehaviour:
   <Name>k__BackingField: Reds
   <TeamColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
   <Health>k__BackingField: 400
-  <Damage>k__BackingField: 15
+  <Damage>k__BackingField: 25
   <SpawnRateTime>k__BackingField: 10
   <CaptureBonusModifier>k__BackingField: 1
   <MaxPawns>k__BackingField: 5
