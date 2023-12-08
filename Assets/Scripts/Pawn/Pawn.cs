@@ -113,7 +113,7 @@ public class Pawn : ExtendedMonoBehaviour
         return _currentState;
     }
 
-    public Vector3 GetDestanation()
+    public Vector3 GetDestination()
     {
         return _navMeshAgent.destination;
     }

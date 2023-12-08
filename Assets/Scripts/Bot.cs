@@ -8,9 +8,11 @@ using UnityEngine;
 public class Bot : ExtendedMonoBehaviour
 {
     private float _timerToMakeMove, _timerToMakeMoveMax = 5f;
+    private float _timerToClearData, _timerToClearDataMax = 30f;
     private float _orderPosThreshold = 1f;
     private float _scorePerPawn;
     private Team _team;
+    private List<Vector3> _excludedTilePositions = new List<Vector3>();
 
     private class Group
     {
@@ -21,13 +23,30 @@ public class Bot : ExtendedMonoBehaviour
         public Group(List<Pawn> pawns, int maxPawns, Vector3 destination)
         {
             Pawns = pawns;
-            MaxPawns = maxPawns;
+            MaxPawns = maxPawns < 1 ? 1 : maxPawns;
             Destination = destination;
         }
 
         public bool IsGroupFull()
         {
-            return Pawns.Count < MaxPawns;
+            return Pawns.Count >= MaxPawns;
+        }
+
+        // The smaller group comparing with it's max size, the lower chance of going to capture tile is
+        public bool ShouldGoCapturing()
+        {
+            float chance = Random.Range(0, 100) * 0.01f;
+            float fullnessOfGroup = Pawns.Count / (float)MaxPawns;
+
+            Debug.Log($"Chances: fullness: {fullnessOfGroup} >= {chance}");
+            if (fullnessOfGroup >= chance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 
@@ -43,27 +62,35 @@ public class Bot : ExtendedMonoBehaviour
         {
             SendPawnsToCapture();
         }
+
+        if (HandleTimer(ref _timerToClearData, _timerToClearDataMax))
+        {
+            _excludedTilePositions.Clear();
+        }
     }
 
     private void SendPawnsToCapture()
     {
         if (_team.CapturedTiles.Count == GameManager.Instance.Tiles.Count)
         {
-            Debug.Log($"All tiles were captured by Team {_team.TeamDataSO.name}");
             return;
         }
 
         List<TileBase> tilesToCaptureForPawns = new List<TileBase>();
         List<Group> formedPawnGroups = new List<Group>();
         List<Pawn> availablePawns = _team.PawnsInTeam;
-        List<Vector3> excludeTilePositions = new List<Vector3>();
 
         foreach (Pawn pawn in availablePawns)
         {
-            RepeatIteration:
-                TileBase closestUncapturedTile = GetClosestUncapturedTilePos(pawn.transform.position, excludeTilePositions);
+            if (IsDestinationNearToAnyExcludedPos(pawn.GetDestination()))
+            {
+                continue;
+            }
 
-                if (IsPositionCloseEnough(pawn.GetDestanation(), closestUncapturedTile.transform.position, _orderPosThreshold))
+            RepeatIteration:
+                TileBase closestUncapturedTile = GetClosestUncapturedTile(pawn.transform.position, _excludedTilePositions);
+
+                if (IsPositionCloseEnough(pawn.GetDestination(), closestUncapturedTile.transform.position, _orderPosThreshold))
                 {
                     continue;
                 }
@@ -81,23 +108,36 @@ public class Bot : ExtendedMonoBehaviour
 
                     if (group.IsGroupFull())
                     {
-                        excludeTilePositions.Add(group.Destination);
+                        _excludedTilePositions.Add(group.Destination);
                         goto RepeatIteration;
                     }
                     else
                     {
                         group.Pawns.Add(pawn);
                     }
-            }
+                }
         }
 
         for (int i = 0; i < formedPawnGroups.Count; i++)
         {
-            PawnTask.LineUpPawnsOnTarget(formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
+            if (formedPawnGroups[i].ShouldGoCapturing())
+            {
+                PawnTask.LineUpPawnsOnTarget(formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
+            }
+        }
+    }
+
+    private bool IsDestinationNearToAnyExcludedPos(Vector3 pos)
+    {
+        foreach (Vector3 tilePos in _excludedTilePositions)
+        {
+            if (IsPositionCloseEnough(pos, tilePos, _orderPosThreshold))
+            {
+                return true;
+            }
         }
 
-        formedPawnGroups.Clear();
-        tilesToCaptureForPawns.Clear();
+        return false;
     }
 
     private int GetBalancedNumOfPawnsToSendCapturing(TileBase tileToCapture)
@@ -131,9 +171,9 @@ public class Bot : ExtendedMonoBehaviour
         return enemyPawnsTotalScore;
     }
 
-    private TileBase GetClosestUncapturedTilePos(Vector3 startPos, List<Vector3> excludePos)
+    private TileBase GetClosestUncapturedTile(Vector3 startPos, List<Vector3> excludePos)
     {
-        TileBase closestTile = new TileBase();
+        TileBase closestTile = GameManager.Instance.Tiles[0];
         float closestDistance = float.MaxValue;
 
         foreach (TileBase tile in GameManager.Instance.Tiles)
