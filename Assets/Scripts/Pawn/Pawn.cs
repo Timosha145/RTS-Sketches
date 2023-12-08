@@ -23,12 +23,12 @@ public class Pawn : ExtendedMonoBehaviour
 
     public float Health { get; protected set; }
     public float MaxHealth { get; protected set; }
+    public float Damage { get; protected set; }
 
     protected State _currentState = State.Idle;
     protected NavMeshAgent _navMeshAgent;
     protected Pawn _pawnToFollow;
     protected Pawn _targetPawn;
-    protected float _damage;
 
     private int _numOfPlatingAnimations = 0;
     private float _timerToSit, _timerToSitMax = 3f;
@@ -113,6 +113,11 @@ public class Pawn : ExtendedMonoBehaviour
         return _currentState;
     }
 
+    public Vector3 GetDestanation()
+    {
+        return _navMeshAgent.destination;
+    }
+
     public void SetPropertiesOnce(Team team, Vector3 targetPos)
     {
         if (!_propertiesAreSet)
@@ -147,7 +152,7 @@ public class Pawn : ExtendedMonoBehaviour
     {
         if (_targetPawn != null)
         {
-            _targetPawn.ChangeHealth(-Math.Abs(_damage / _numberOfHitsPerAttack));
+            _targetPawn.ChangeHealth(-Math.Abs(Damage / _numberOfHitsPerAttack));
         }
     }
 
@@ -401,7 +406,7 @@ public class Pawn : ExtendedMonoBehaviour
     private void Setup()
     {
         MaxHealth = Team.TeamDataSO.Health;
-        _damage = Team.TeamDataSO.Damage;
+        Damage = Team.TeamDataSO.Damage;
         Health = Team.TeamDataSO.Health;
         _stayingPosition = transform.position;
 

@@ -22,7 +22,7 @@ public class TileHealer : TileBase
 
         if (HandleTimer(ref _timerToHeal, _timerToHealMax))
         {
-            foreach (Pawn Pawn in _pawnsInZone)
+            foreach (Pawn Pawn in _pawnsInTile)
             {
                 if (Pawn.Health < Pawn.MaxHealth && Pawn.Team == _capturedByTeam && Pawn.IsSitting())
                 {

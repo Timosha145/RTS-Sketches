@@ -22,7 +22,7 @@ public class TileBase : ExtendedMonoBehaviour
         public Team Team;
     }
 
-    protected List<Pawn> _pawnsInZone = new List<Pawn>();
+    protected List<Pawn> _pawnsInTile = new List<Pawn>();
     protected Team _capturedByTeam;
     protected Team _capturingTeam;
 
@@ -44,7 +44,7 @@ public class TileBase : ExtendedMonoBehaviour
     {
         if (other.TryGetComponent(out Pawn Pawn))
         {
-            _pawnsInZone.Add(Pawn);
+            _pawnsInTile.Add(Pawn);
 
             // If capturing progress is zero assign capturing team to the tile
             if (_captureProgress == 0)
@@ -59,20 +59,25 @@ public class TileBase : ExtendedMonoBehaviour
     {
         if (other.TryGetComponent(out Pawn Pawn))
         {
-            _pawnsInZone.Remove(Pawn);
+            _pawnsInTile.Remove(Pawn);
 
-            if (_pawnsInZone.Count == 0)
+            if (_pawnsInTile.Count == 0)
             {
                 _captureSpeed = 1;
             }
         }
     }
 
+    public List<Pawn> GetPawns()
+    {
+        return _pawnsInTile;
+    }
+
     protected void HandleCaptureSpeedModifier()
     {
         int bonus = 0;
 
-        foreach (Pawn Pawn in _pawnsInZone)
+        foreach (Pawn Pawn in _pawnsInTile)
         {
             if (Pawn.IsSitting())
             {
@@ -80,7 +85,7 @@ public class TileBase : ExtendedMonoBehaviour
             }
         }
 
-        bonus = _pawnsInZone.Count == 0 || !CheckIfIsPawnsTeam(_capturingTeam) ? 1 : bonus;
+        bonus = _pawnsInTile.Count == 0 || !CheckIfIsPawnsTeam(_capturingTeam) ? 1 : bonus;
 
         _captureSpeed = Mathf.Clamp(bonus, 0, _maxPawnBonusModifier);
     }
@@ -101,9 +106,9 @@ public class TileBase : ExtendedMonoBehaviour
             ChangeCapturingProgress(false);
         }
 
-        if (_captureProgress <= 0 && _pawnsInZone.Count > 0)
+        if (_captureProgress <= 0 && _pawnsInTile.Count > 0)
         {
-            ChangeCapturingTeam(_pawnsInZone[0].Team);
+            ChangeCapturingTeam(_pawnsInTile[0].Team);
         }
     }
 
@@ -122,16 +127,22 @@ public class TileBase : ExtendedMonoBehaviour
 
     private bool ShouldCapture()
     {
-        return CheckPawnsSameTeam() && _capturedByTeam != _capturingTeam && CheckIfIsPawnsTeam(_capturingTeam) && _pawnsInZone.Count > 0;
+        return CheckPawnsSameTeam() && _capturedByTeam != _capturingTeam && CheckIfIsPawnsTeam(_capturingTeam) && _pawnsInTile.Count > 0;
     }
 
     private bool ShouldUncapture()
     {
-        return _timerToCapture > 0 && CheckPawnsSameTeam() && (CheckIfIsPawnsTeam(_capturedByTeam) || !CheckIfIsPawnsTeam(_capturingTeam) || _pawnsInZone.Count == 0);
+        return _timerToCapture > 0 && CheckPawnsSameTeam() && (CheckIfIsPawnsTeam(_capturedByTeam) 
+            || !CheckIfIsPawnsTeam(_capturingTeam) || _pawnsInTile.Count == 0);
     }
 
     private void Captured()
     {
+        if (_capturedByTeam != null)
+        {
+            _capturedByTeam.RemoveTile(this);
+        }
+
         _capturedByTeam = _capturingTeam;
         _timerToCapture = 0f;
         _captureProgress = 0f;
@@ -145,14 +156,16 @@ public class TileBase : ExtendedMonoBehaviour
         {
             Team = _capturedByTeam
         });
+
+        _capturedByTeam.AddTile(this);
     }
 
     private bool CheckPawnsSameTeam()
     {
         // If each Pawn in the list is from the same team as the first Pawn in the list return true
-        foreach (Pawn Pawn in _pawnsInZone)
+        foreach (Pawn Pawn in _pawnsInTile)
         {
-            if (_pawnsInZone[0].Team != Pawn.Team)
+            if (_pawnsInTile[0].Team != Pawn.Team)
             {
                 return false;
             }
@@ -164,7 +177,7 @@ public class TileBase : ExtendedMonoBehaviour
     private bool CheckIfIsPawnsTeam(Team team)
     {
         // If capturing team is same as each Pawn's team return true
-        foreach (Pawn Pawn in _pawnsInZone)
+        foreach (Pawn Pawn in _pawnsInTile)
         {
             if (Pawn.Team != team)
             {
