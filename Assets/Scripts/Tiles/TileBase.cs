@@ -45,6 +45,7 @@ public class TileBase : ExtendedMonoBehaviour
         if (other.TryGetComponent(out Pawn Pawn))
         {
             _pawnsInTile.Add(Pawn);
+            Pawn.OnDestroyed += Pawn_OnDestroyed;
 
             // If capturing progress is zero assign capturing team to the tile
             if (_captureProgress == 0)
@@ -55,11 +56,19 @@ public class TileBase : ExtendedMonoBehaviour
         }
     }
 
+    private void Pawn_OnDestroyed(object sender, EventArgs e)
+    {
+        Pawn pawn = sender as Pawn;
+
+        _pawnsInTile.Remove(pawn);
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.TryGetComponent(out Pawn Pawn))
         {
             _pawnsInTile.Remove(Pawn);
+            Pawn.OnDestroyed -= Pawn_OnDestroyed;
 
             if (_pawnsInTile.Count == 0)
             {

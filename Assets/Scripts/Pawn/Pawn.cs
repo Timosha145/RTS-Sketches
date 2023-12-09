@@ -1,5 +1,6 @@
 ﻿using PoplarLib;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,6 +15,7 @@ public class Pawn : ExtendedMonoBehaviour
     [field: SerializeField] public Team Team { get; private set; }
     [field: SerializeField] public float Offset { get; private set; }
 
+    public event EventHandler OnDestroyed;
     public event EventHandler<OnSelectedEventArgs> OnSelected;
     public event EventHandler OnDeselected;
     public event EventHandler<OnHealthChangedEventArgs> OnHealthChanged;
@@ -99,6 +101,8 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void OnDestroy()
     {
+        OnDestroyed?.Invoke(this, EventArgs.Empty);
+
         Team.RemovePawn(this);
         PawnSelections.Instance.PawnList.Remove(this);
 

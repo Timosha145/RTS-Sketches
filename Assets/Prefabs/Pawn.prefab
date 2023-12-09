@@ -52,7 +52,7 @@ MonoBehaviour:
   ISTEST: 0
   _numberOfHitsPerAttack: 2
   _rotationSpeed: 4
-  _distanceToSee: 2
+  _distanceToSee: 1.75
   _distanceToAttack: 0.7
   <Team>k__BackingField: {fileID: 0}
   <Offset>k__BackingField: 0.7

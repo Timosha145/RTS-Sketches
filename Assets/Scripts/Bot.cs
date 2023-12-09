@@ -13,6 +13,7 @@ public class Bot : ExtendedMonoBehaviour
     private float _scorePerPawn;
     private Team _team;
     private List<Vector3> _excludedTilePositions = new List<Vector3>();
+    private List<Vector3> _attackedTilePositions = new List<Vector3>();
 
     private class Group
     {
@@ -38,15 +39,7 @@ public class Bot : ExtendedMonoBehaviour
             float chance = Random.Range(0, 100) * 0.01f;
             float fullnessOfGroup = Pawns.Count / (float)MaxPawns;
 
-            Debug.Log($"Chances: fullness: {fullnessOfGroup} >= {chance}");
-            if (fullnessOfGroup >= chance)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return fullnessOfGroup >= chance;
         }
     }
 
@@ -54,22 +47,48 @@ public class Bot : ExtendedMonoBehaviour
     {
         _team = GetComponent<Team>();
         _scorePerPawn = _team.TeamDataSO.Health + _team.TeamDataSO.Damage;
+
+        _team.OnTileBeingAttacked += Team_OnTileBeingAttacked;
+    }
+
+    private void Team_OnTileBeingAttacked(object sender, Team.OnTileBeingAttakcedEventArgs e)
+    {
+        TileBase tile = e.Tile;
+        _attackedTilePositions.Add(tile.transform.position);
     }
 
     private void Update()
     {
         if (HandleTimer(ref _timerToMakeMove, _timerToMakeMoveMax))
         {
-            SendPawnsToCapture();
+            HandleMoves();
         }
 
         if (HandleTimer(ref _timerToClearData, _timerToClearDataMax))
         {
             _excludedTilePositions.Clear();
+            _attackedTilePositions.Clear();
         }
     }
 
-    private void SendPawnsToCapture()
+    private void HandleMoves()
+    {
+        List<Pawn> healthyPawns = new List<Pawn>();
+        List<Pawn> weakPawns = new List<Pawn>();
+
+        FilterPawnsByHealth(_team.PawnsInTeam, ref weakPawns, ref healthyPawns);
+
+        if (TrySendPawnsToHeal(weakPawns))
+        {
+            SendPawnsToCapture(healthyPawns);
+        }
+        else
+        {
+            SendPawnsToCapture(_team.PawnsInTeam);
+        }
+    }
+
+    private void SendPawnsToCapture(List<Pawn> pawns)
     {
         if (_team.CapturedTiles.Count == GameManager.Instance.Tiles.Count)
         {
@@ -78,9 +97,8 @@ public class Bot : ExtendedMonoBehaviour
 
         List<TileBase> tilesToCaptureForPawns = new List<TileBase>();
         List<Group> formedPawnGroups = new List<Group>();
-        List<Pawn> availablePawns = _team.PawnsInTeam;
 
-        foreach (Pawn pawn in availablePawns)
+        foreach (Pawn pawn in pawns)
         {
             if (IsDestinationNearToAnyExcludedPos(pawn.GetDestination()))
             {
@@ -127,6 +145,41 @@ public class Bot : ExtendedMonoBehaviour
         }
     }
 
+    private void FilterPawnsByHealth(List<Pawn> pawns, ref List<Pawn> weakPawns, ref List<Pawn> healthyPawns)
+    {
+        float chanceToSendWeakPawn = 0.15f;
+        float dangerousHealthInPersentege = 0.3f;
+
+        foreach (Pawn pawn in pawns)
+        {
+            if (pawn.Health / pawn.MaxHealth < dangerousHealthInPersentege && Random.Range(0, 100) / 100 < chanceToSendWeakPawn)
+            {
+                weakPawns.Add(pawn);
+            }
+            else
+            {
+                healthyPawns.Add(pawn);
+            }
+        }
+    }
+
+    private bool TrySendPawnsToHeal(List<Pawn> pawns)
+    {
+        Vector3 tileHealerPos = new Vector3();
+        bool hasFoundAnyCapturedHealerTile = false;
+
+        foreach (Pawn pawn in pawns)
+        {
+            if (TryGetClosestTileHealerPos(ref tileHealerPos, pawn.transform.position))
+            {
+                pawn.OrderToMove(tileHealerPos);
+                hasFoundAnyCapturedHealerTile = true;
+            }
+        }
+
+        return hasFoundAnyCapturedHealerTile;
+    }
+
     private bool IsDestinationNearToAnyExcludedPos(Vector3 pos)
     {
         foreach (Vector3 tilePos in _excludedTilePositions)
@@ -138,6 +191,28 @@ public class Bot : ExtendedMonoBehaviour
         }
 
         return false;
+    }
+
+    private bool TryGetClosestTileHealerPos(ref Vector3 tileHealerPos, Vector3 startPos)
+    {
+        bool hasFoundAnyCapturedHealerTile = false;
+        float closestDistance = float.MaxValue;
+        List<TileBase> capturedTiles = _team.CapturedTiles;
+
+        foreach (TileBase tile in capturedTiles)
+        {
+            Vector3 tilePos = tile.transform.position;
+            float distance = Vector3.Distance(startPos, tilePos);
+
+            if (distance < closestDistance && tile is TileHealer)
+            {
+                closestDistance = distance;
+                tileHealerPos = tile.transform.position;
+                hasFoundAnyCapturedHealerTile = true;
+            }
+        }
+        
+        return hasFoundAnyCapturedHealerTile;
     }
 
     private int GetBalancedNumOfPawnsToSendCapturing(TileBase tileToCapture)
@@ -178,7 +253,7 @@ public class Bot : ExtendedMonoBehaviour
 
         foreach (TileBase tile in GameManager.Instance.Tiles)
         {
-            if (!_team.CapturedTiles.Contains(tile) && !excludePos.Contains(tile.transform.position))
+            if ((!_team.CapturedTiles.Contains(tile) && !excludePos.Contains(tile.transform.position)) || _attackedTilePositions.Contains(tile.transform.position))
             {
                 Vector3 tilePos = tile.transform.position;
                 float distance = Vector3.Distance(startPos, tilePos);
