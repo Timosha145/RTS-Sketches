@@ -77,6 +77,11 @@ public class TileBase : ExtendedMonoBehaviour
         }
     }
 
+    public bool IsCaptured()
+    {
+        return _capturedByTeam != null;
+    }
+
     public List<Pawn> GetPawns()
     {
         return _pawnsInTile;

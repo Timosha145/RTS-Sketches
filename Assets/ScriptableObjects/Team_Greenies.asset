@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 431eda4fed0ae1744a2cce61ea737007, type: 3}
-  m_Name: Team_Blues
+  m_Name: Team_Greenies
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Blues
-  <TeamColor>k__BackingField: {r: 0.037104093, g: 0, b: 0.8773585, a: 1}
-  <Health>k__BackingField: 250
-  <Damage>k__BackingField: 30
-  <SpawnRateTime>k__BackingField: 7
+  <Name>k__BackingField: Greenies
+  <TeamColor>k__BackingField: {r: 0, g: 0.6132076, b: 0.10798104, a: 1}
+  <Health>k__BackingField: 200
+  <Damage>k__BackingField: 35
+  <SpawnRateTime>k__BackingField: 12
   <CaptureBonusModifier>k__BackingField: 1
   <MaxPawns>k__BackingField: 7
   <MinPawns>k__BackingField: 3

@@ -37,14 +37,16 @@ public class Pawn : ExtendedMonoBehaviour
     private float _lastMoveTime;
     private float _carvingTime = 0.5f;
     private float _carvingMoveThreshold = 0.01f;
+    private float _pawnOnWayThreshold = 1.5f;
     private float _distanceIgnoreThreshold = 1f;
     private float _minimumDistanceToMove = 0.25f;
     private float _walkRadiusOnTarget = 3f;
     private float _timerToAttack, _timerToAttackMax = 2f;
     private float _timerToChangeLastPos, _timerToChangeLastPosMax = 0.3f;
 
+    private bool _isAnotherPawnOnTargetPosition = false;
     private bool _propertiesAreSet = false;
-    private bool _isAnimationPlaying; // Only certain animations change value of this variable
+    private bool _isAnimationPlaying = false; // Only certain animations change value of this variable
 
     private Vector3 _targetPosition = Vector3.zero;
     private Vector3 _lastPosition;
@@ -110,6 +112,11 @@ public class Pawn : ExtendedMonoBehaviour
         {
             PawnSelections.Instance.DeselectEnemy();
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        _isAnotherPawnOnTargetPosition = other.TryGetComponent(out Pawn pawn) && IsPositionCloseEnough(pawn.transform.position, _stayingPosition, _pawnOnWayThreshold);
     }
 
     public State GetState()
@@ -295,9 +302,17 @@ public class Pawn : ExtendedMonoBehaviour
         if (ShouldStop())
         {
             ResetDestination();
+            UnsetNumOfPlatingAnimations();
+
+            _isAnotherPawnOnTargetPosition = false;
             _currentState = State.Idle;
             OnEndedMoving?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    private void UnsetNumOfPlatingAnimations()
+    {
+        _numOfPlatingAnimations = 0;
     }
 
     private void Pawn_OnEndedSitting(object sender, EventArgs e)
@@ -368,8 +383,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool ShouldStop()
     {
-
-        return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position);
+        return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position || _isAnotherPawnOnTargetPosition);
     }
 
     private void ResetDestination()

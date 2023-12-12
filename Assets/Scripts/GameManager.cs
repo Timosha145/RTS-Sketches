@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -25,5 +27,10 @@ public class GameManager : MonoBehaviour
     public void InitTile(TileBase tile)
     {
         Tiles.Add(tile);
+    }
+
+    public bool AreAllTilesCaptured()
+    {
+        return Tiles.All(tile => tile.IsCaptured());
     }
 }
