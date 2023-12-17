@@ -383,6 +383,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool ShouldStop()
     {
+        // Maybe because of detecting near pawn it makes bugs with sitting or attacking
         return _currentState == State.Moving && (_lastMoveTime + _carvingTime < Time.time || _navMeshAgent.destination == transform.position || _isAnotherPawnOnTargetPosition);
     }
 

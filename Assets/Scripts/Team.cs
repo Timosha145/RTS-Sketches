@@ -34,6 +34,22 @@ public class Team : MonoBehaviour
         Material.color = TeamDataSO.TeamColor;
     }
 
+    int lastCount = 0, currectCount = 0;
+    private void Update()
+    {
+        currectCount = PawnsInTeam.Count;
+
+        if (currectCount >= lastCount)
+        {
+            lastCount = currectCount;
+        }
+        else
+        {
+            Debug.LogError($"Team: {TeamDataSO.Name} pawn removed!");
+            lastCount--;
+        }
+    }
+
     public void IncreaseMaxPawns()
     {
         int possibleCurrentMaxPawns = TeamDataSO.MinPawns + CapturedTiles.Count + TeamDataSO.CaptureBonusModifier;
@@ -53,6 +69,7 @@ public class Team : MonoBehaviour
 
     public void RemovePawn(Pawn pawn)
     {
+        lastCount--;
         PawnsInTeam.Remove(pawn);
     }
 

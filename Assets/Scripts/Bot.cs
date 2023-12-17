@@ -104,7 +104,7 @@ public class Bot : ExtendedMonoBehaviour
         List<Pawn> healthyPawns = new List<Pawn>();
         List<Pawn> weakPawns = new List<Pawn>();
 
-        FilterPawnsByHealth(GetNonIngnorePawnsList(_team.PawnsInTeam), ref weakPawns, ref healthyPawns);
+        FilterPawnsByHealth(GetNonIgnorePawns(_team.PawnsInTeam), ref weakPawns, ref healthyPawns);
 
         if (TrySendPawnsToHeal(weakPawns))
         {
@@ -128,7 +128,7 @@ public class Bot : ExtendedMonoBehaviour
 
         foreach (Pawn pawn in pawns)
         {
-            if (IsDestinationNearToAnyExcludedPos(pawn.GetDestination()))
+            if (IsDestinationNearToAnyExcludedPos(pawn.GetDestination()) && pawn != null)
             {
                 continue;
             }
@@ -168,10 +168,9 @@ public class Bot : ExtendedMonoBehaviour
         }
     }
 
-    private List<Pawn> GetNonIngnorePawnsList(List<Pawn> pawns)
+    private List<Pawn> GetNonIgnorePawns(List<Pawn> pawns)
     {
-        pawns.RemoveAll(item => _ignorePawns.Contains(item));
-        return pawns;
+        return pawns.Where(item => !_ignorePawns.Contains(item)).ToList();
     }
 
     private bool IsAnyGroupNotFull(List<Group> groups)
@@ -219,7 +218,7 @@ public class Bot : ExtendedMonoBehaviour
 
         if (pawn.Health == pawn.MaxHealth || IsChanceToUseUnhealedPawn())
         {
-            _ignorePawns.Remove(pawn);
+           _ignorePawns.Remove(pawn); // ERROR
             pawn.OnHealthChanged -= Pawn_OnHealthChanged;
         }
     }
