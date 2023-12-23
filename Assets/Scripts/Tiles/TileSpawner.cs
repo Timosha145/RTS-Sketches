@@ -1,20 +1,36 @@
 using PoplarLib;
 using UnityEngine;
-
+using System;
 
 public class TileSpawner : ExtendedMonoBehaviour
 {
-    [field: SerializeField] public Team Team { get; private set; }
-
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Transform _gatheringPoint;
     [SerializeField] private Pawn _pawnPrefab;
 
+    public Team Team { get; private set; }
+
     private float _timerToSpawn;
+    private bool _initialized = false;
 
     private void Update()
     {
-        HandleSpawning();
+        if (_initialized)
+        {
+            HandleSpawning();
+        }
+    }
+
+    public void Init(Team team)
+    {
+        if (_initialized)
+        {
+            Debug.LogError($"{this} is being tried to be initialized again!");
+            return;
+        }
+
+        Team = team;
+        _initialized = true;
     }
 
     private void HandleSpawning()

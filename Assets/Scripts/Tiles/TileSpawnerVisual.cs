@@ -9,11 +9,6 @@ public class TileSpawnerVisual : MonoBehaviour
 
     private void Start()
     {
-        Setup();
-    }
-
-    private void Setup()
-    {
         _foreground.color = _tile.Team.TeamDataSO.TeamColor;
     }
 }

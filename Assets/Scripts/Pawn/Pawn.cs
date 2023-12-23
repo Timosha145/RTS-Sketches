@@ -116,7 +116,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        _isAnotherPawnOnTargetPosition = other.TryGetComponent(out Pawn pawn) && IsPositionCloseEnough(pawn.transform.position, _stayingPosition, _pawnOnWayThreshold);
+        _isAnotherPawnOnTargetPosition = other.TryGetComponent(out Pawn pawn) && IsCloseEnough(pawn.transform.position, _stayingPosition, _pawnOnWayThreshold);
     }
 
     public State GetState()
@@ -323,7 +323,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void MoveToTarget(Vector3 targetPos)
     {
-        if (!IsPositionCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
+        if (!IsCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
         {
             if (_currentState == State.Sitting)
             {
@@ -349,7 +349,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     private bool IsAnyEnemyCloseEnoughToApproach()
     {
-        return IsPositionCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
+        return IsCloseEnough(_navMeshAgent.destination, transform.position, _distanceIgnoreThreshold)
             && TryGetClosestEnemy(_distanceToSee, out _targetPawn);
     }
 
@@ -361,23 +361,23 @@ public class Pawn : ExtendedMonoBehaviour
         }
         else
         {
-            return IsPositionCloseEnough(_targetPawn.transform.position, transform.position, _distanceToAttack);
+            return IsCloseEnough(_targetPawn.transform.position, transform.position, _distanceToAttack);
         }
     }
 
     private bool ShouldReturnToStayingPos()
     {
-        return !IsPositionCloseEnough(_stayingPosition, transform.position, _walkRadiusOnTarget);
+        return !IsCloseEnough(_stayingPosition, transform.position, _walkRadiusOnTarget);
     }
 
     private bool ShouldFollowEnemy()
     {
-        return _pawnToFollow != null && !IsPositionCloseEnough(_pawnToFollow.transform.position, transform.position, _distanceIgnoreThreshold);
+        return _pawnToFollow != null && !IsCloseEnough(_pawnToFollow.transform.position, transform.position, _distanceIgnoreThreshold);
     }
 
     private bool ShouldMove()
     {
-        return !IsPositionCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) 
+        return !IsCloseEnough(_lastPosition, transform.position, _carvingMoveThreshold) 
             && _currentState == State.Moving;
     }
 
@@ -404,7 +404,7 @@ public class Pawn : ExtendedMonoBehaviour
         {
             foreach (Pawn pawn in PawnSelections.Instance.PawnList)
             {
-                if (pawn.Team != Team && IsPositionCloseEnough(pawn.transform.position, transform.position, seeingDistance))
+                if (pawn.Team != Team && IsCloseEnough(pawn.transform.position, transform.position, seeingDistance))
                 {
                     seeingDistance = Vector3.Distance(pawn.transform.position, transform.position);
                     targetPawn = pawn;

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Team : MonoBehaviour
 {
     [SerializeField] public TeamDataSO TeamDataSO;
+    [field:SerializeField] public TileSpawner TileSpawner { get; private set; }
 
     public event EventHandler<OnTileBeingAttakcedEventArgs> OnTileBeingAttacked;
 
@@ -29,25 +30,10 @@ public class Team : MonoBehaviour
         CurrentMaxPawns = TeamDataSO.MinPawns;
         PawnsInTeam = new List<Pawn>();
         CapturedTiles = new List<TileBase>();
+        TileSpawner.Init(this);
 
         Material = new Material(TeamDataSO.DefaultMaterial);
         Material.color = TeamDataSO.TeamColor;
-    }
-
-    int lastCount = 0, currectCount = 0;
-    private void Update()
-    {
-        currectCount = PawnsInTeam.Count;
-
-        if (currectCount >= lastCount)
-        {
-            lastCount = currectCount;
-        }
-        else
-        {
-            Debug.LogError($"Team: {TeamDataSO.Name} pawn removed!");
-            lastCount--;
-        }
     }
 
     public void IncreaseMaxPawns()
@@ -69,7 +55,6 @@ public class Team : MonoBehaviour
 
     public void RemovePawn(Pawn pawn)
     {
-        lastCount--;
         PawnsInTeam.Remove(pawn);
     }
 

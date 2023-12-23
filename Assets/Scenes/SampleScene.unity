@@ -2603,7 +2603,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268343, y: 0.000000022481224, z: -0.000000009312028, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: -0.000000022481213, z: 0.000000009312022, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -18.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3051,6 +3051,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamDataSO: {fileID: 11400000, guid: 8a0e5e8aa2c99184c8d487a793d7a6a4, type: 2}
+  <TileSpawner>k__BackingField: {fileID: 1726591171}
 --- !u!114 &379851061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4992,6 +4993,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 81246432}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &709708283 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7571526429388705230, guid: 0bac73e27aefbd34ba4cee2560b98907,
+    type: 3}
+  m_PrefabInstance: {fileID: 1037706}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8cef2f453e12742a556d119939a323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &715584302
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9390,6 +9403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamDataSO: {fileID: 11400000, guid: c0ff803ad1bd2e4408677632571d4573, type: 2}
+  <TileSpawner>k__BackingField: {fileID: 1522640365}
 --- !u!1001 &1374348433
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9532,7 +9546,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387609531}
-  m_LocalRotation: {x: 0.38268343, y: 0.000000022481224, z: -0.000000009312028, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: -0.000000022481213, z: 0.000000009312022, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -18.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -9903,6 +9917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamDataSO: {fileID: 11400000, guid: bcdfd88cc78976a41b87acbaf16265c5, type: 2}
+  <TileSpawner>k__BackingField: {fileID: 709708283}
 --- !u!114 &1429592302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10560,6 +10575,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 525988100}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1522640365 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7571526429388705230, guid: 0bac73e27aefbd34ba4cee2560b98907,
+    type: 3}
+  m_PrefabInstance: {fileID: 432242324}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8cef2f453e12742a556d119939a323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1527999508
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11917,6 +11944,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a56401a6cabcc7f4387efa1fc6fbfa25, type: 3}
+--- !u!114 &1726591171 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7571526429388705230, guid: 0bac73e27aefbd34ba4cee2560b98907,
+    type: 3}
+  m_PrefabInstance: {fileID: 1816101959}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8cef2f453e12742a556d119939a323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1726682147 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1164812262302617432, guid: a56401a6cabcc7f4387efa1fc6fbfa25,
@@ -12032,6 +12071,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1982030499}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1768106754 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7571526429388705230, guid: 0bac73e27aefbd34ba4cee2560b98907,
+    type: 3}
+  m_PrefabInstance: {fileID: 985879189}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae8cef2f453e12742a556d119939a323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1775735383
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12157,6 +12208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TeamDataSO: {fileID: 11400000, guid: c910fcd3c1dbb834b9b9e7676d7ff327, type: 2}
+  <TileSpawner>k__BackingField: {fileID: 1768106754}
 --- !u!114 &1793454737
 MonoBehaviour:
   m_ObjectHideFlags: 0
