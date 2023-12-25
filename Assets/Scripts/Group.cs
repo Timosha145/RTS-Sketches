@@ -27,4 +27,9 @@ public class Group
 
         return ExtendedMonoBehaviour.EvaluateChance(fullnessOfGroup);
     }
+
+    public void Order(PawnOrder order)
+    {
+        PawnTask.OrderPawns(order, Pawns, Destination);
+    }
 }

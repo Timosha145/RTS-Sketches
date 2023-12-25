@@ -52,7 +52,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                PawnTask.LineUpPawnsOnTarget(_pawnSelections.PawnSelectedList, raycastHit.point);
+                PawnTask.OrderPawns(PawnOrder.LineUpOnTarget, _pawnSelections.PawnSelectedList, raycastHit.point);
             }
 
             //switch (_order)

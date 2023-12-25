@@ -3,8 +3,22 @@ using UnityEngine;
 
 public static class PawnTask
 {
+    public static void OrderPawns(PawnOrder task, List<Pawn> pawnList, Vector3 centerPoint)
+    {
+        switch (task)
+        {
+            case PawnOrder.LineUpOnTarget:
+                LineUpPawnsOnTarget(pawnList, centerPoint);
+                break;
+            case PawnOrder.CircleTarget:
+                CircleTarget(pawnList, centerPoint);
+                break;
+            default:
+                break;
+        }
+    }
 
-    public static void LineUpPawnsOnTarget(List<Pawn> pawnList, Vector3 centerPoint)
+    private static void LineUpPawnsOnTarget(List<Pawn> pawnList, Vector3 centerPoint)
     {
         int rows = Mathf.FloorToInt(Mathf.Sqrt(pawnList.Count));
         int cols = Mathf.CeilToInt((float)pawnList.Count / rows);
@@ -25,7 +39,7 @@ public static class PawnTask
         }
     }
 
-    public static void CircleTarget(List<Pawn> pawnList, Vector3 centerPoint)
+    private static void CircleTarget(List<Pawn> pawnList, Vector3 centerPoint)
     {
         for (int pawnIndex = 0; pawnIndex < pawnList.Count; pawnIndex++)
         {
@@ -38,7 +52,14 @@ public static class PawnTask
                 centerPoint.z + radius * Mathf.Sin(2 * Mathf.PI * pawnIndex / pawnList.Count)
             );
 
+
             pawn.OrderToMove(posInCircle);
         }
     }
+}
+
+public enum PawnOrder
+{
+    LineUpOnTarget,
+    CircleTarget
 }

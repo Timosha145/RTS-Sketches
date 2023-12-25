@@ -17,7 +17,7 @@ public class Bot : ExtendedMonoBehaviour
     private int _numberOfPriorityClosestTiles = 2;
     private Team _team;
     private List<Vector3> _excludedTilePositions = new List<Vector3>();
-    private List<Vector3> _attackedTilePositions = new List<Vector3>();
+    private List<TileBase> _attackedTiles = new List<TileBase>();
     private List<Pawn> _ignorePawns;
     private TileBase[] _priorityTiles;
 
@@ -39,7 +39,9 @@ public class Bot : ExtendedMonoBehaviour
     private void Team_OnTileBeingAttacked(object sender, Team.OnTileBeingAttakcedEventArgs e)
     {
         TileBase tile = e.Tile;
-        _attackedTilePositions.Add(tile.transform.position);
+        _attackedTiles.Add(tile);
+
+        DefenseTile();
     }
 
     private void Update()
@@ -53,7 +55,7 @@ public class Bot : ExtendedMonoBehaviour
         if (HandleTimer(ref _timerToClearData, _timerToClearDataMax))
         {
             _excludedTilePositions.Clear();
-            _attackedTilePositions.Clear();
+            _attackedTiles.Clear();
         }
 
         HandleGameLost();
@@ -87,26 +89,49 @@ public class Bot : ExtendedMonoBehaviour
         {
             SendPawnsToCapture(_team.PawnsInTeam);
         }
-
-        SendPawnsToDefense(_team.PawnsInTeam);
     }
 
     private void SetPriorityTiles()
     {
         if (_priorityTiles != null) return;
 
-        _priorityTiles = new TileBase[_numberOfPriorityClosestTiles];
-        TileSpawner _spawnTile = _team.TileSpawner;
-
+        Vector3 _spawnTilePos = _team.TileSpawner.transform.position;
         _priorityTiles = GameManager.Instance.Tiles
-            .OrderBy(tile => Vector3.Distance(tile.transform.position, _spawnTile.transform.position))
+            .OrderBy(tile => Vector3.Distance(tile.transform.position, _spawnTilePos))
             .Take(_numberOfPriorityClosestTiles)
             .ToArray();
     }
 
-    private void SendPawnsToDefense(List<Pawn> pawns)
-    {
 
+    private void DefenseTile()
+    {
+        foreach (TileBase tile in _attackedTiles)
+        {
+            bool defendTile = EvaluateChance(60);
+            if (_priorityTiles.Contains(tile) || defendTile)
+            {
+                int neededPawnCount = GetBalancedNumOfPawnsToSendCapturing(tile);
+                List<Pawn> closestPawns = GetClosestPawns(tile.transform.position, neededPawnCount);
+                Group group = new Group(closestPawns, neededPawnCount, tile.transform.position);
+                _ignorePawns.AddRange(closestPawns);
+
+                if (group.ShouldGoCapturing())
+                {
+                    group.Order(PawnOrder.CircleTarget);
+                    closestPawns[0].Select();
+                }
+            }
+        }
+    }
+
+    private List<Pawn> GetClosestPawns(Vector3 pos, int neededPawnCount)
+    {
+        List<Pawn> closestPawns = _team.PawnsInTeam
+            .OrderBy(pawn => Vector3.Distance(pawn.transform.position, pos))
+            .Take(neededPawnCount)
+            .ToList();
+
+        return closestPawns;
     }
 
     private void SendPawnsToCapture(List<Pawn> pawns)
@@ -121,21 +146,18 @@ public class Bot : ExtendedMonoBehaviour
 
         foreach (Pawn pawn in pawns)
         {
-            if (IsDestinationNearToAnyExcludedPos(pawn.GetDestination()) && pawn != null)
-            {
-                continue;
-            }
-
             TileBase closestUncapturedTile = GetClosestUncapturedTile(pawn.transform.position, _excludedTilePositions);
 
-            if (IsCloseEnough(pawn.GetDestination(), closestUncapturedTile.transform.position, _orderPosThreshold))
+            if (IsCloseEnough(pawn.GetDestination(), closestUncapturedTile.transform.position, _orderPosThreshold)
+                || IsDestinationNearToAnyExcludedPos(pawn.GetDestination()))
             {
                 continue;
             }
 
-            if (!tilesToCaptureForPawns.Contains(closestUncapturedTile))
+            if (!tilesToCaptureForPawns.Contains(closestUncapturedTile) || _attackedTiles.Contains(closestUncapturedTile))
             {
-                Group group = new Group(new List<Pawn> { pawn }, GetBalancedNumOfPawnsToSendCapturing(closestUncapturedTile), closestUncapturedTile.transform.position);
+                Group group = new Group(new List<Pawn> { pawn }, GetBalancedNumOfPawnsToSendCapturing(closestUncapturedTile),
+                    closestUncapturedTile.transform.position);
                 
                 if (group.IsGroupFull())
                 {
@@ -156,7 +178,7 @@ public class Bot : ExtendedMonoBehaviour
         {
             if (formedPawnGroups[i].ShouldGoCapturing())
             {
-                PawnTask.LineUpPawnsOnTarget(formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
+                PawnTask.OrderPawns(PawnOrder.LineUpOnTarget, formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
             }
         }
     }

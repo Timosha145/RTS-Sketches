@@ -46,19 +46,26 @@ public class TileBase : ExtendedMonoBehaviour
         {
             _pawnsInTile.Add(Pawn);
             Pawn.OnDestroyed += Pawn_OnDestroyed;
+            Pawn.OnStartedSitting += Pawn_OnStartedSitting;
+        }
+    }
 
-            // If capturing progress is zero assign capturing team to the tile
-            if (_captureProgress == 0)
-            {
-                _capturingTeam = Pawn.Team;
-                ChangeCapturingTeam(Pawn.Team);
-            }
+    private void Pawn_OnStartedSitting(object sender, EventArgs e)
+    {
+        Pawn pawn = sender as Pawn;
+
+        // If capturing progress is zero assign capturing team to the tile
+        if (_captureProgress == 0 && _capturingTeam != pawn.Team)
+        {
+            ChangeCapturingTeam(pawn.Team);
         }
     }
 
     private void Pawn_OnDestroyed(object sender, EventArgs e)
     {
         Pawn pawn = sender as Pawn;
+        pawn.OnDestroyed -= Pawn_OnDestroyed;
+        pawn.OnStartedSitting -= Pawn_OnStartedSitting;
 
         _pawnsInTile.Remove(pawn);
     }
@@ -69,6 +76,7 @@ public class TileBase : ExtendedMonoBehaviour
         {
             _pawnsInTile.Remove(Pawn);
             Pawn.OnDestroyed -= Pawn_OnDestroyed;
+            Pawn.OnStartedSitting -= Pawn_OnStartedSitting;
 
             if (_pawnsInTile.Count == 0)
             {
@@ -110,6 +118,11 @@ public class TileBase : ExtendedMonoBehaviour
         {
             ChangeCapturingProgress(true);
 
+            if (_captureProgress <= 0 && _pawnsInTile.Count > 0 && _capturingTeam != _pawnsInTile[0].Team)
+            {
+                ChangeCapturingTeam(_pawnsInTile[0].Team);
+            }
+
             if (_captureProgress >= 1)
             {
                 Captured();
@@ -118,11 +131,6 @@ public class TileBase : ExtendedMonoBehaviour
         else if (ShouldUncapture())
         {
             ChangeCapturingProgress(false);
-        }
-
-        if (_captureProgress <= 0 && _pawnsInTile.Count > 0)
-        {
-            ChangeCapturingTeam(_pawnsInTile[0].Team);
         }
     }
 
