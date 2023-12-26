@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 431eda4fed0ae1744a2cce61ea737007, type: 3}
-  m_Name: Team_Reds
+  m_Name: Team_Negrs
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Reds
-  <TeamColor>k__BackingField: {r: 0.6509434, g: 0, b: 0, a: 1}
-  <Health>k__BackingField: 410
-  <Damage>k__BackingField: 25
-  <SpawnRateTime>k__BackingField: 10
+  <Name>k__BackingField: Blues
+  <TeamColor>k__BackingField: {r: 0.3679245, g: 0.08028053, b: 0, a: 1}
+  <Health>k__BackingField: 600
+  <Damage>k__BackingField: 150
+  <SpawnRateTime>k__BackingField: 90
   <CaptureBonusModifier>k__BackingField: 1
-  <MaxPawns>k__BackingField: 9
-  <MinPawns>k__BackingField: 2
+  <MaxPawns>k__BackingField: 10
+  <MinPawns>k__BackingField: 1
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: 1de25131e6f3d2b47a4c6e1ff5ebd568,
     type: 2}

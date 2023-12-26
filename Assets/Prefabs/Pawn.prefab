@@ -54,6 +54,7 @@ MonoBehaviour:
   _rotationSpeed: 4
   _distanceToSee: 1.75
   _distanceToAttack: 0.7
+  _attackPerSeconds: 3
   <Team>k__BackingField: {fileID: 0}
   <Offset>k__BackingField: 0.7
 --- !u!195 &3335907718141312587

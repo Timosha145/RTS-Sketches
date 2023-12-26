@@ -11,6 +11,7 @@ public class Pawn : ExtendedMonoBehaviour
     [SerializeField] private float _rotationSpeed = 4f;
     [SerializeField] private float _distanceToSee = 1.75f;
     [SerializeField] private float _distanceToAttack;
+    [SerializeField] private float _attackPerSeconds;
 
     [field: SerializeField] public Team Team { get; private set; }
     [field: SerializeField] public float Offset { get; private set; }
@@ -85,6 +86,7 @@ public class Pawn : ExtendedMonoBehaviour
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _lastPosition = transform.position;
+        _timerToAttackMax = _attackPerSeconds;
     }
 
     private void Start()
@@ -202,9 +204,12 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void OrderToMove(Vector3 targetPos)
     {
-        _stayingPosition = targetPos;
-        MoveToTarget(targetPos);
-        StopFollowing();
+        if (this != null)
+        {
+            _stayingPosition = targetPos;
+            MoveToTarget(targetPos);
+            StopFollowing();
+        }
     }
 
     public void OnAnimationStarted()

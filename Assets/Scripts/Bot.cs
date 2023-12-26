@@ -11,7 +11,7 @@ public class Bot : ExtendedMonoBehaviour
 {
     private float _timerToMakeMove, _timerToMakeMoveMax = 5f;
     private float _timerToClearData, _timerToClearDataMax = 30f;
-    private float _timerToGameLost, _timerToGameLostMax = 15f;
+    private float _timerToGameLost, _timerToGameLostMax = 30f;
     private float _orderPosThreshold = 1f;
     private float _scorePerPawn;
     private int _numberOfPriorityClosestTiles = 2;
@@ -56,6 +56,7 @@ public class Bot : ExtendedMonoBehaviour
         {
             _excludedTilePositions.Clear();
             _attackedTiles.Clear();
+            _ignorePawns.Clear();
         }
 
         HandleGameLost();
@@ -67,10 +68,6 @@ public class Bot : ExtendedMonoBehaviour
         {
             Destroy(this);
             Debug.Log($"Team {_team.name} lost!");
-        }
-        else
-        {
-            _timerToGameLost = 0;
         }
     }
 
@@ -118,7 +115,6 @@ public class Bot : ExtendedMonoBehaviour
                 if (group.ShouldGoCapturing())
                 {
                     group.Order(PawnOrder.CircleTarget);
-                    closestPawns[0].Select();
                 }
             }
         }

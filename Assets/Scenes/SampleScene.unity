@@ -3059,7 +3059,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 379851058}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6833dbd9f4c96144a62fefbd08b1bcc, type: 3}
   m_Name: 
@@ -6515,6 +6515,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Tile_Peaks (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6693090778211309627, guid: 7065909ed56c9a84d9c2936fb55c91c9,
+        type: 3}
+      propertyPath: ISTEST
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -12216,7 +12221,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1793454734}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6833dbd9f4c96144a62fefbd08b1bcc, type: 3}
   m_Name: 

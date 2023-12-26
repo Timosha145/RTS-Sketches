@@ -18,7 +18,7 @@ MonoBehaviour:
   <Damage>k__BackingField: 30
   <SpawnRateTime>k__BackingField: 7
   <CaptureBonusModifier>k__BackingField: 1
-  <MaxPawns>k__BackingField: 7
+  <MaxPawns>k__BackingField: 14
   <MinPawns>k__BackingField: 3
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: 1de25131e6f3d2b47a4c6e1ff5ebd568,
     type: 2}
