@@ -21,11 +21,12 @@ public class Group
     }
 
     // The smaller group comparing with it's max size, the lower chance of going to capture tile is
-    public bool ShouldGoCapturing()
+    public bool ShouldGoCapturing(float modifier = 1)
     {
         float fullnessOfGroup = Mathf.Clamp(Pawns.Count / (float)MaxPawns * 100, 0, 100);
+        modifier = fullnessOfGroup < 90 ? modifier : 1; //If it's 90% save, don't count on modifier
 
-        return ExtendedMonoBehaviour.EvaluateChance(fullnessOfGroup);
+        return ExtendedMonoBehaviour.EvaluateChance(fullnessOfGroup * modifier);
     }
 
     public void Order(PawnOrder order)

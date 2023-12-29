@@ -6,9 +6,19 @@ using UnityEngine;
 
 public class TileBase : ExtendedMonoBehaviour
 {
-    [SerializeField] private bool ISTEST = false;
     [SerializeField] private float _timeToCapture = 3f;
     [SerializeField] private int _maxPawnBonusModifier;
+
+    public int Activity { get; private set; }
+
+    protected List<Pawn> _pawnsInTile = new List<Pawn>();
+    protected Team _capturedByTeam;
+    protected Team _capturingTeam;
+
+    private int _captureSpeed;
+    private float _timerToCapture = 0f, _timerToCaptureMax;
+    private float _timerToRefreshActivity = 0f, _timerToRefreshActivityMax = 60f;
+    private float _captureProgress = 0f;
 
     public event EventHandler<CaptureProgressEventArgs> OnChangeCaptureProgress;
     public event EventHandler<CapturedEventArgs> OnCaptured;
@@ -17,22 +27,24 @@ public class TileBase : ExtendedMonoBehaviour
     public class CaptureProgressEventArgs : EventArgs
     {
         public float Progress;
+
+        public CaptureProgressEventArgs(float progress)
+        {
+            Progress = progress;
+        }
     }
 
     public class CapturedEventArgs : EventArgs
     {
         public Team Team;
+
+        public CapturedEventArgs(Team team)
+        {
+            Team = team;
+        }
     }
 
-    protected List<Pawn> _pawnsInTile = new List<Pawn>();
-    protected Team _capturedByTeam;
-    protected Team _capturingTeam;
-
-    private int _captureSpeed;
-    private float _timerToCapture = 0f, _timerToCaptureMax;
-    private float _captureProgress = 0f;
-
-    private void Awake()
+    protected void Awake()
     {
         _timerToCaptureMax = _timeToCapture;
     }
@@ -40,6 +52,17 @@ public class TileBase : ExtendedMonoBehaviour
     protected void Start()
     {
         GameManager.Instance.InitTile(this);
+    }
+
+    protected void Update()
+    {
+        if (HandleTimer(ref _timerToRefreshActivity, _timerToRefreshActivityMax))
+        {
+            Activity = 0;
+        }
+
+        HandleCapturing();
+        HandleCaptureSpeedModifier();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -60,6 +83,12 @@ public class TileBase : ExtendedMonoBehaviour
         if (_captureProgress <= 0 && _capturingTeam != pawn.Team)
         {
             ChangeCapturingTeam(pawn.Team);
+        }
+
+        // Rising activity level depending on how many other teams are interested in capturing it
+        if (_capturedByTeam != pawn.Team && _capturedByTeam != null)
+        {
+            Activity++;
         }
     }
 
@@ -88,6 +117,16 @@ public class TileBase : ExtendedMonoBehaviour
     public List<Pawn> GetPawns()
     {
         return _pawnsInTile;
+    }
+
+    public Team GetCapturedByTeam()
+    {
+        return _capturedByTeam;
+    }
+
+    public bool IsAnyPawnOfTeam(Team team)
+    {
+        return _pawnsInTile.Any(pawn => pawn.Team == team);
     }
 
     protected void HandleCaptureSpeedModifier()
@@ -134,10 +173,7 @@ public class TileBase : ExtendedMonoBehaviour
         _timerToCapture += Time.deltaTime * _captureSpeed * multiplier;
         _captureProgress = _timerToCapture / _timerToCaptureMax;
 
-        OnChangeCaptureProgress?.Invoke(this, new CaptureProgressEventArgs()
-        {
-            Progress = _captureProgress
-        });
+        OnChangeCaptureProgress?.Invoke(this, new CaptureProgressEventArgs(_captureProgress));
     }
 
     private bool ShouldCapture()
@@ -162,15 +198,8 @@ public class TileBase : ExtendedMonoBehaviour
         _timerToCapture = 0f;
         _captureProgress = 0f;
 
-        OnChangeCaptureProgress?.Invoke(this, new CaptureProgressEventArgs()
-        {
-            Progress = _captureProgress
-        });
-
-        OnCaptured?.Invoke(this, new CapturedEventArgs()
-        {
-            Team = _capturedByTeam
-        });
+        OnChangeCaptureProgress?.Invoke(this, new CaptureProgressEventArgs(_captureProgress));
+        OnCaptured?.Invoke(this, new CapturedEventArgs(_capturedByTeam));
 
         _capturedByTeam.AddTile(this);
     }
@@ -188,10 +217,6 @@ public class TileBase : ExtendedMonoBehaviour
     private void ChangeCapturingTeam(Team team)
     {
         _capturingTeam = team;
-
-        OnCapturingTeamChanged?.Invoke(this, new CapturedEventArgs()
-        {
-            Team = _capturingTeam
-        });
+        OnCapturingTeamChanged?.Invoke(this, new CapturedEventArgs(_capturingTeam));
     }
 }

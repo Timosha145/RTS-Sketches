@@ -6,7 +6,6 @@ using UnityEngine.AI;
 
 public class Pawn : ExtendedMonoBehaviour
 {
-    [SerializeField] private bool ISTEST;
     [SerializeField] private int _numberOfHitsPerAttack;
     [SerializeField] private float _rotationSpeed = 4f;
     [SerializeField] private float _distanceToSee = 1.75f;

@@ -15,10 +15,4 @@ public class TileIncreaser : TileBase
 
         e.Team.IncreaseMaxPawns();
     }
-
-    private void Update()
-    {
-        HandleCapturing();
-        HandleCaptureSpeedModifier();
-    }
 }

@@ -5,13 +5,11 @@ public class TileHealer : TileBase
 
     private float _timerToHeal, _timerToHealMax = 1f;
 
-    private void Update()
+    private new void Update()
     {
-        HandleCapturing();
-        HandleCaptureSpeedModifier();
+        base.Update();
         HandleHealing();
     }
-
 
     private void HandleHealing()
     {

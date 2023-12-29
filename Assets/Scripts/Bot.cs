@@ -1,29 +1,41 @@
 using PoplarLib;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.Rendering.PostProcessing.HistogramMonitor;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Team))]
 public class Bot : ExtendedMonoBehaviour
 {
+    [field: SerializeField] public string Name { get; private set; }
+    [SerializeField] bool ISTEST = false;
+
     private float _timerToMakeMove, _timerToMakeMoveMax = 5f;
     private float _timerToClearData, _timerToClearDataMax = 30f;
     private float _timerToGameLost, _timerToGameLostMax = 30f;
+    private float _timerToCheckTileActivity, _timerToCheckTileActivityMax = 10f;
+    private float _timerToChangeBotType, _timerToChangeBotTypeMax = 60f;
     private float _orderPosThreshold = 1f;
     private float _scorePerPawn;
-    private int _numberOfPriorityClosestTiles = 2;
+    private float _riskChanceModifier;
+    private float _safeChanceModifier;
+    private float _chanceToChangeBotTypeDuringGame;
     private Team _team;
     private List<Vector3> _excludedTilePositions = new List<Vector3>();
     private List<TileBase> _attackedTiles = new List<TileBase>();
     private List<Pawn> _ignorePawns;
-    private TileBase[] _priorityTiles;
+    private List<Pawn> _patrollingPawns;
+    private List<TileBase> _tilesInPriority;
 
     private void Awake()
     {
         _ignorePawns = new List<Pawn>();
+        _patrollingPawns = new List<Pawn>();
+        _chanceToChangeBotTypeDuringGame = Random.Range(0, 10);
+        SetBotType();
     }
 
     private void Start()
@@ -36,6 +48,34 @@ public class Bot : ExtendedMonoBehaviour
         _team.OnTileBeingAttacked += Team_OnTileBeingAttacked;
     }
 
+    private void Update()
+    {
+        if (HandleTimer(ref _timerToMakeMove, _timerToMakeMoveMax))
+        {
+            HandleMoves();
+        }
+
+        if (HandleTimer(ref _timerToClearData, _timerToClearDataMax))
+        {
+            HandleCacheClearing();
+        }
+
+        if (HandleTimer(ref _timerToCheckTileActivity, _timerToCheckTileActivityMax))
+        {
+            HandlePatrolling();
+        }
+
+        if (HandleTimer(ref _timerToChangeBotType, _timerToChangeBotTypeMax))
+        {
+            if (EvaluateChance(_chanceToChangeBotTypeDuringGame))
+            {
+                SetBotType();
+            }
+        }
+
+        HandleGameLost();
+    }
+
     private void Team_OnTileBeingAttacked(object sender, Team.OnTileBeingAttakcedEventArgs e)
     {
         TileBase tile = e.Tile;
@@ -44,22 +84,33 @@ public class Bot : ExtendedMonoBehaviour
         DefenseTile();
     }
 
-    private void Update()
+    private void SetBotType()
     {
-        if (HandleTimer(ref _timerToMakeMove, _timerToMakeMoveMax))
+        BotType[] botTypes = (BotType[])Enum.GetValues(typeof(BotType));
+        BotType botType = botTypes[Random.Range(0, botTypes.Length)];
+        Name = $"Vasya {botType}";
+
+        switch (botType)
         {
-            HandleMoves();
+            case BotType.Aggressive:
+                _riskChanceModifier = 1.5f;
+                _safeChanceModifier = 0.6f;
+                break;
+            case BotType.Careful:
+                _riskChanceModifier = 0.5f;
+                _safeChanceModifier = 1.6f;
+                break;
+            case BotType.Classic:
+                _riskChanceModifier = 1f;
+                _safeChanceModifier = 1f;
+                break;
+            default:
+                Debug.LogError("Unexpected BotType: " + botType);
+                break;
         }
 
-        // Clear cache
-        if (HandleTimer(ref _timerToClearData, _timerToClearDataMax))
-        {
-            _excludedTilePositions.Clear();
-            _attackedTiles.Clear();
-            _ignorePawns.Clear();
-        }
-
-        HandleGameLost();
+        _timerToClearDataMax *= _safeChanceModifier;
+        _timerToMakeMoveMax *= _safeChanceModifier;
     }
 
     private void HandleGameLost()
@@ -71,12 +122,44 @@ public class Bot : ExtendedMonoBehaviour
         }
     }
 
+    private void HandleCacheClearing()
+    {
+        float chanceToFreePatrollingPawn = 35 * _riskChanceModifier;
+        float chanceToFreeIgnoredPawn = 15 * _riskChanceModifier;
+
+        RemoveSpicificPawnsFromIgnored(GetNonCapturingPawns(_ignorePawns));
+        _excludedTilePositions.Clear();
+        _attackedTiles.Clear();
+
+        ClearPawnListWithChance(_patrollingPawns, chanceToFreePatrollingPawn);
+        ClearPawnListWithChance(_ignorePawns, chanceToFreeIgnoredPawn);
+    }
+
+    private void RemoveSpicificPawnsFromIgnored(List<Pawn> pawns)
+    {
+        _ignorePawns.RemoveAll(pawn => GetNonCapturingPawns(pawns).Contains(pawn));
+    }
+
+    private void ClearPawnListWithChance(List<Pawn> pawns, float chanceForEachPawn)
+    {
+        for (int i = pawns.Count - 1; i >= 0; i--)
+        {
+            Pawn pawn = pawns[i];
+
+            if (pawn == null || EvaluateChance(chanceForEachPawn))
+            {
+                if (ISTEST && pawn!=null) Debug.Log($"Free this guy: [{pawn}] [{chanceForEachPawn}%]");
+                pawns.RemoveAt(i);
+            }
+        }
+    }
+
     private void HandleMoves()
     {
         List<Pawn> healthyPawns = new List<Pawn>();
         List<Pawn> weakPawns = new List<Pawn>();
 
-        FilterPawnsByHealth(GetNonIgnorePawns(_team.PawnsInTeam), ref weakPawns, ref healthyPawns);
+        FilterPawnsByHealth(_team.PawnsInTeam, ref weakPawns, ref healthyPawns);
 
         if (TrySendPawnsToHeal(weakPawns))
         {
@@ -84,50 +167,97 @@ public class Bot : ExtendedMonoBehaviour
         }
         else
         {
-            SendPawnsToCapture(_team.PawnsInTeam);
+            SendPawnsToCapture(GetNonIgnorePawns(_team.PawnsInTeam));
         }
     }
 
     private void SetPriorityTiles()
     {
-        if (_priorityTiles != null) return;
+        if (_tilesInPriority != null) return;
 
         Vector3 _spawnTilePos = _team.TileSpawner.transform.position;
-        _priorityTiles = GameManager.Instance.Tiles
+        _tilesInPriority = GameManager.Instance.Tiles
             .OrderBy(tile => Vector3.Distance(tile.transform.position, _spawnTilePos))
-            .Take(_numberOfPriorityClosestTiles)
-            .ToArray();
+            .ToList();
     }
-
 
     private void DefenseTile()
     {
         foreach (TileBase tile in _attackedTiles)
         {
-            bool defendTile = EvaluateChance(60);
-            if (_priorityTiles.Contains(tile) || defendTile)
-            {
-                int neededPawnCount = GetBalancedNumOfPawnsToSendCapturing(tile);
-                List<Pawn> closestPawns = GetClosestPawns(tile.transform.position, neededPawnCount);
-                Group group = new Group(closestPawns, neededPawnCount, tile.transform.position);
-                _ignorePawns.AddRange(closestPawns);
+            float chanceToDefendTile = GetTilePriorityInPercentege(tile) * _safeChanceModifier;
 
-                if (group.ShouldGoCapturing())
-                {
-                    group.Order(PawnOrder.CircleTarget);
-                }
+            if (!tile.IsAnyPawnOfTeam(_team) && EvaluateChance(chanceToDefendTile))
+            {
+                if (ISTEST) Debug.Log($"Defense tile: [{tile}] [{chanceToDefendTile}%]");
+                FormGroupAndSendToTile(tile, PawnOrder.CircleTarget, _ignorePawns);
             }
         }
     }
 
-    private List<Pawn> GetClosestPawns(Vector3 pos, int neededPawnCount)
+    private void HandlePatrolling()
+    {
+        int tileActivityModifier = 3;
+
+        foreach (TileBase tile in _team.CapturedTiles)
+        {
+            float chanceToSendPatrolingByActivity = GetTilePriorityInPercentege(tile) + tile.Activity * tileActivityModifier;
+            if (EvaluateChance(chanceToSendPatrolingByActivity) && tile.Activity > 0)
+            {
+                if (ISTEST) Debug.Log($"Patrol tile: [{tile}] [{chanceToSendPatrolingByActivity}%]");
+                FormGroupAndSendToTile(tile, PawnOrder.LineUpOnTarget, _patrollingPawns);
+            }
+        }
+    }
+
+    private float GetTilePriorityInPercentege(TileBase tile)
+    {
+        if (_tilesInPriority.Count == 0)
+        {
+            Debug.LogError($"There no priority tiles for team: [{_team}]!");
+        }
+
+        return 100 - ((_tilesInPriority.IndexOf(tile) + 1) / _tilesInPriority.Count) * 100;
+    }
+
+    private void FormGroupAndSendToTile(TileBase tile, PawnOrder order, List<Pawn> addToList = null)
+    {
+        int closestPawnsThreshold = 12;
+        int neededPawnCount = GetBalancedNumOfPawnsToSendCapturing(tile);
+        List<Pawn> closestPawns = GetClosestPawns(tile.transform.position, neededPawnCount, closestPawnsThreshold);
+        Group group = new Group(closestPawns, neededPawnCount, tile.transform.position);
+        addToList?.AddRange(closestPawns);
+
+        RemoveSpicificPawnsFromIgnored(closestPawns);
+
+        if (group.ShouldGoCapturing(_riskChanceModifier))
+        {
+            if (ISTEST) Debug.Log($"Formed group count [{group.Pawns.Count}]");
+            group.Order(order);
+        }
+    }
+
+    private List<Pawn> GetClosestPawns(Vector3 pos, int neededPawnCount, int threshold = int.MaxValue)
     {
         List<Pawn> closestPawns = _team.PawnsInTeam
             .OrderBy(pawn => Vector3.Distance(pawn.transform.position, pos))
             .Take(neededPawnCount)
+            .Where(pawn => IsCloseEnough(pos, pawn.transform.position, threshold))
             .ToList();
 
         return closestPawns;
+    }
+
+    private TileBase[] GetClosestUncapturedTiles(Vector3 pos, int neededTileCount, List<Vector3> excludedTilePositions = null)
+    {
+        TileBase[] closestTiles = GameManager.Instance.Tiles
+            .OrderBy(tile => Vector3.Distance(tile.transform.position, pos))
+            .Where(tile => tile.GetCapturedByTeam() != _team && (excludedTilePositions == null
+                || !excludedTilePositions.Contains(tile.transform.position)))
+            .Take(neededTileCount)
+            .ToArray();
+
+        return closestTiles;
     }
 
     private void SendPawnsToCapture(List<Pawn> pawns)
@@ -142,46 +272,71 @@ public class Bot : ExtendedMonoBehaviour
 
         foreach (Pawn pawn in pawns)
         {
-            TileBase closestUncapturedTile = GetClosestUncapturedTile(pawn.transform.position, _excludedTilePositions);
+            int numOfTilesToChooseFrom = 3;
+            TileBase[] closestUncapturedTiles = GetClosestUncapturedTiles(pawn.transform.position, numOfTilesToChooseFrom, _excludedTilePositions);
+            TileBase tileToCapture = closestUncapturedTiles[Random.Range(0, closestUncapturedTiles.Length - 1)];
 
-            if (IsCloseEnough(pawn.GetDestination(), closestUncapturedTile.transform.position, _orderPosThreshold)
+            if (IsCloseEnough(pawn.GetDestination(), tileToCapture.transform.position, _orderPosThreshold)
                 || IsDestinationNearToAnyExcludedPos(pawn.GetDestination()))
             {
                 continue;
             }
 
-            if (!tilesToCaptureForPawns.Contains(closestUncapturedTile) || _attackedTiles.Contains(closestUncapturedTile))
+            if (!tilesToCaptureForPawns.Contains(tileToCapture) || _attackedTiles.Contains(tileToCapture))
             {
-                Group group = new Group(new List<Pawn> { pawn }, GetBalancedNumOfPawnsToSendCapturing(closestUncapturedTile),
-                    closestUncapturedTile.transform.position);
+                Group group = new Group(new List<Pawn> { pawn }, GetBalancedNumOfPawnsToSendCapturing(tileToCapture),
+                    tileToCapture.transform.position);
                 
                 if (group.IsGroupFull())
                 {
                     _excludedTilePositions.Add(group.Destination);
                 }
 
-                tilesToCaptureForPawns.Add(closestUncapturedTile);
+                tilesToCaptureForPawns.Add(tileToCapture);
                 formedPawnGroups.Add(group);
-            } 
+                _ignorePawns.Add(pawn);
+            }
             else if (IsAnyGroupNotFull(formedPawnGroups))
             {
-                Group group = formedPawnGroups[tilesToCaptureForPawns.FindIndex(tile => tile == closestUncapturedTile)];
+                Group group = formedPawnGroups[tilesToCaptureForPawns.FindIndex(tile => tile == tileToCapture)];
                 group.Pawns.Add(pawn);
             }
         }
 
         for (int i = 0; i < formedPawnGroups.Count; i++)
         {
-            if (formedPawnGroups[i].ShouldGoCapturing())
+            if (formedPawnGroups[i].ShouldGoCapturing(_riskChanceModifier))
             {
                 PawnTask.OrderPawns(PawnOrder.LineUpOnTarget, formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
             }
         }
     }
 
+    private List<Pawn> GetNonCapturingPawns(List<Pawn> pawns)
+    {
+        List<Pawn> capturingPawns = new List<Pawn>();
+
+        foreach (Pawn pawn in pawns)
+        {
+            if (pawn == null)
+            {
+                continue;
+            }
+
+            TileBase closestTile = GetClosestUncapturedTiles(pawn.transform.position, 1)[0];
+            if (!IsCloseEnough(closestTile.transform.position, pawn.GetDestination(), _orderPosThreshold)
+                || closestTile.GetCapturedByTeam() == _team)
+            {
+                capturingPawns.Add(pawn);
+            }
+        }
+
+        return capturingPawns;
+    }
+
     private List<Pawn> GetNonIgnorePawns(List<Pawn> pawns)
     {
-        return pawns.Where(item => !_ignorePawns.Contains(item)).ToList();
+        return pawns.Where(pawn => !_ignorePawns.Contains(pawn) && !_patrollingPawns.Contains(pawn)).ToList();
     }
 
     private bool IsAnyGroupNotFull(List<Group> groups)
@@ -191,13 +346,13 @@ public class Bot : ExtendedMonoBehaviour
 
     private void FilterPawnsByHealth(List<Pawn> pawns, ref List<Pawn> weakPawns, ref List<Pawn> healthyPawns)
     {
-        int chanceToSendWeakPawn = 15;
+        float chanceToSendWeakPawn = 15 * _riskChanceModifier;
         float dangerousHealthInPersentege = 0.3f;
 
         foreach (Pawn pawn in pawns)
         {
-            List<Pawn> targetList = (pawn.Health / pawn.MaxHealth < dangerousHealthInPersentege && Random.Range(0, 100) < chanceToSendWeakPawn)
-                ? weakPawns
+            List<Pawn> targetList = (pawn.Health / pawn.MaxHealth < dangerousHealthInPersentege && EvaluateChance(chanceToSendWeakPawn))
+                ? GetNonIgnorePawns(weakPawns)
                 : healthyPawns;
 
             targetList.Add(pawn);
@@ -208,7 +363,7 @@ public class Bot : ExtendedMonoBehaviour
     {
         Vector3 tileHealerPos = new Vector3();
         bool hasFoundAnyCapturedHealerTile = false;
-        int chanceNotToSendPawnHealing = 55;
+        float chanceNotToSendPawnHealing = 55 * _riskChanceModifier;
 
         foreach (Pawn pawn in pawns)
         {
@@ -227,11 +382,10 @@ public class Bot : ExtendedMonoBehaviour
     private void Pawn_OnHealthChanged(object sender, Pawn.OnHealthChangedEventArgs e)
     {
         Pawn pawn = sender as Pawn;
-        int chanceToUseUnhealedPawn = 15;
 
-        if (pawn.Health == pawn.MaxHealth || EvaluateChance(chanceToUseUnhealedPawn))
+        if (pawn.Health == pawn.MaxHealth)
         {
-           _ignorePawns.Remove(pawn);
+            _ignorePawns.Remove(pawn);
             pawn.OnHealthChanged -= Pawn_OnHealthChanged;
         }
     }
@@ -266,7 +420,7 @@ public class Bot : ExtendedMonoBehaviour
 
     private int GetBalancedNumOfPawnsToSendCapturing(TileBase tileToCapture)
     {
-        int chanceToIncreaseMinPawns = 40;
+        float chanceToIncreaseMinPawns = 40 * _safeChanceModifier;
         int minNumOfPawnsToSend = EvaluateChance(chanceToIncreaseMinPawns) ? 2 : 1;
 
         // Is it last tile to capture
@@ -316,4 +470,11 @@ public class Bot : ExtendedMonoBehaviour
 
         return closestTile;
     }
+}
+
+enum BotType
+{
+    Aggressive,
+    Careful,
+    Classic
 }
