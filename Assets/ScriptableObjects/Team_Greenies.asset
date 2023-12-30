@@ -15,7 +15,7 @@ MonoBehaviour:
   <Name>k__BackingField: Greenies
   <TeamColor>k__BackingField: {r: 0, g: 0.6132076, b: 0.10798104, a: 1}
   <Health>k__BackingField: 250
-  <Damage>k__BackingField: 45
+  <Damage>k__BackingField: 40
   <SpawnRateTime>k__BackingField: 15
   <CaptureBonusModifier>k__BackingField: 1
   <MaxPawns>k__BackingField: 11

@@ -3540,7 +3540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aca377b1db7a5c042b4a400d9d9e1eb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Team>k__BackingField: {fileID: 1429592301}
+  <Team>k__BackingField: {fileID: 1372605145}
   _groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -6066,7 +6066,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_LocalRotation: {x: 0.38268343, y: -0.000000022481213, z: 0.000000009312022, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: 0.000000022481224, z: -0.000000009312028, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -18.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -22400,7 +22400,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1387609531}
-  m_LocalRotation: {x: 0.38268343, y: -0.000000022481213, z: 0.000000009312022, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: 0.000000022481224, z: -0.000000009312028, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 10, z: -18.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -26332,7 +26332,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b204993c132b4643a1fd8b3277d03e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSelected: 9
+  _maxSelected: 12
   <PlayerPawnLayerId>k__BackingField: 8
   <PlayerPawnLayer>k__BackingField:
     serializedVersion: 2
@@ -26341,9 +26341,9 @@ MonoBehaviour:
   <EnemyPawnLayer>k__BackingField:
     serializedVersion: 2
     m_Bits: 512
+  SelectedEnemyPawn: {fileID: 0}
   PawnList: []
   PawnSelectedList: []
-  SelectedEnemyPawn: {fileID: 0}
 --- !u!1001 &1659198514
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -28789,7 +28789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Name>k__BackingField: 
-  ISTEST: 0
+  ISTEST: 1
 --- !u!1001 &1796268869
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,11 +11,11 @@ public class PawnSelections : MonoBehaviour
     [field: SerializeField] public int EnemyPawnLayerId { get; private set; }
     [field: SerializeField] public LayerMask EnemyPawnLayer { get; private set; }
 
-    public static PawnSelections Instance { get; private set; }
+    [HideInInspector] public Pawn SelectedEnemyPawn;
+    [HideInInspector] public List<Pawn> PawnList = new List<Pawn>();
+    [HideInInspector] public List<Pawn> PawnSelectedList = new List<Pawn>();
 
-    public List<Pawn> PawnList = new List<Pawn>();
-    public List<Pawn> PawnSelectedList = new List<Pawn>();
-    public Pawn SelectedEnemyPawn;
+    public static PawnSelections Instance { get; private set; }
 
     private void Awake()
     {

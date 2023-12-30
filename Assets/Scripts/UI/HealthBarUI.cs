@@ -28,8 +28,6 @@ public class HealthBarUI : MonoBehaviour
         }
     }
 
-    // --------- Public Methods --------- //
-
     public void ChangeWidth(float maxHealth)
     {
         float Width = maxHealth * _widthModifier;
@@ -49,8 +47,6 @@ public class HealthBarUI : MonoBehaviour
 
         _target = currentHealth / maxHeatlh;
     }
-
-    // --------- Private Methods --------- //
 
     private void Show()
     {

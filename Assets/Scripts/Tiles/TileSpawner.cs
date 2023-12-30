@@ -6,10 +6,10 @@ public class TileSpawner : ExtendedMonoBehaviour
 {
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Transform _gatheringPoint;
-    [SerializeField] private Pawn _pawnPrefab;
 
     public Team Team { get; private set; }
 
+    private Pawn _pawnPrefab;
     private float _timerToSpawn;
     private bool _initialized = false;
 
@@ -31,6 +31,7 @@ public class TileSpawner : ExtendedMonoBehaviour
 
         Team = team;
         _initialized = true;
+        _pawnPrefab = team.TeamDataSO.PawnPrefab;
     }
 
     private void HandleSpawning()

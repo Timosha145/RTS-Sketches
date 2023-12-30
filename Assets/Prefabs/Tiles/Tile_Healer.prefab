@@ -911,7 +911,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _timeToCapture: 15
   _maxPawnBonusModifier: 3
-  _healthModifier: 15
+  _healthModifier: 35
 --- !u!4 &4249968763110251499 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1164812262302617432, guid: a56401a6cabcc7f4387efa1fc6fbfa25,

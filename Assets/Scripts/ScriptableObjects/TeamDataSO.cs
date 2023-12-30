@@ -13,4 +13,5 @@ public class TeamDataSO : ScriptableObject
     [field: SerializeField] public int MaxPawns { get; private set; }
     [field: SerializeField] public int MinPawns { get; private set; }
     [field: SerializeField] public Material DefaultMaterial { get; private set; }
+    [field: SerializeField] public Pawn PawnPrefab { get; private set; }
 }
