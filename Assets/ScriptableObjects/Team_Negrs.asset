@@ -22,3 +22,5 @@ MonoBehaviour:
   <MinPawns>k__BackingField: 1
   <DefaultMaterial>k__BackingField: {fileID: 2100000, guid: 1de25131e6f3d2b47a4c6e1ff5ebd568,
     type: 2}
+  <PawnPrefab>k__BackingField: {fileID: 1503718354642631465, guid: 6aca31a8e65213d48b9448e5091f615a,
+    type: 3}
