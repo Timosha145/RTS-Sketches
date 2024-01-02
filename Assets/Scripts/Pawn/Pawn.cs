@@ -6,7 +6,6 @@ using UnityEngine.AI;
 
 public class Pawn : ExtendedMonoBehaviour
 {
-    [SerializeField] private int _numberOfHitsPerAttack;
     [SerializeField] private float _rotationSpeed = 4f;
     [SerializeField] private float _distanceToSee = 1.75f;
     [SerializeField] private float _distanceToAttack;
@@ -32,7 +31,7 @@ public class Pawn : ExtendedMonoBehaviour
     protected Pawn _pawnToFollow;
     protected Pawn _targetPawn;
 
-    private int _numOfPlatingAnimations = 0;
+    private int _numOfPlayingAnimations = 0;
     private float _timerToSit, _timerToSitMax = 3f;
     private float _lastMoveTime;
     private float _carvingTime = 0.5f;
@@ -44,6 +43,7 @@ public class Pawn : ExtendedMonoBehaviour
     private float _timerToAttack, _timerToAttackMax = 2f;
     private float _timerToChangeLastPos, _timerToChangeLastPosMax = 0.3f;
 
+    private bool _canStandUp = false;
     private bool _isAnotherPawnOnTargetPosition = false;
     private bool _propertiesAreSet = false;
     private bool _isAnimationPlaying = false; // Only certain animations change value of this variable
@@ -74,11 +74,11 @@ public class Pawn : ExtendedMonoBehaviour
 
     public enum State
     {
-        Idle,
-        Sitting,
-        Moving,
-        Attacking,
-        PlayingAnimation
+        Idle = 1,
+        Sitting = 2,
+        Moving = 3,
+        Attacking = 4,
+        PlayingAnimation = 5
     }
 
     private void Awake()
@@ -90,7 +90,6 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void Start()
     {
-        OnEndedSitting += Pawn_OnEndedSitting;
         Team.AddPawn(this);
         Setup();
     }
@@ -160,11 +159,11 @@ public class Pawn : ExtendedMonoBehaviour
         }
     }
 
-    public void OnAttackTarget()
+    public void OnAttackTarget(int numberOfHitsPerAttack)
     {
         if (_targetPawn != null)
         {
-            _targetPawn.ChangeHealth(-Math.Abs(Damage / _numberOfHitsPerAttack));
+            _targetPawn.ChangeHealth(-Math.Abs(Damage / numberOfHitsPerAttack));
         }
     }
 
@@ -213,17 +212,26 @@ public class Pawn : ExtendedMonoBehaviour
 
     public void OnAnimationStarted()
     {
-        _numOfPlatingAnimations++;
+        _numOfPlayingAnimations++;
         _isAnimationPlaying = true;
     }
 
-    public void OnAnimationStopped()
+    public void OnAnimationStopped(int stateIndex)
     {
-        _numOfPlatingAnimations--;
+        _numOfPlayingAnimations--;
+        _isAnimationPlaying = _numOfPlayingAnimations > 0;
 
-        if (_numOfPlatingAnimations == 0)
+        switch (stateIndex)
         {
-            _isAnimationPlaying = false;
+            case (int)State.Sitting:
+                _timerToSit = 0;
+                _currentState = State.Idle;
+                break;
+            case (int)State.Attacking:
+                _currentState = State.Idle;
+                break;
+            default:
+                break;
         }
     }
 
@@ -232,6 +240,7 @@ public class Pawn : ExtendedMonoBehaviour
         if (_currentState == State.Idle && HandleTimer(ref _timerToSit, _timerToSitMax) && _targetPawn == null)
         {
             _currentState = State.Sitting;
+            _canStandUp = true;
             OnStartedSitting?.Invoke(this, EventArgs.Empty);
         }
         else if (_currentState != State.Idle)
@@ -271,7 +280,7 @@ public class Pawn : ExtendedMonoBehaviour
 
     protected void HandleMovement()
     {
-        if (_isAnimationPlaying || _currentState == State.Sitting)
+        if (_isAnimationPlaying || IsSitting())
         {
             _navMeshAgent.destination = transform.position;
             return;
@@ -316,21 +325,17 @@ public class Pawn : ExtendedMonoBehaviour
 
     private void UnsetNumOfPlatingAnimations()
     {
-        _numOfPlatingAnimations = 0;
-    }
-
-    private void Pawn_OnEndedSitting(object sender, EventArgs e)
-    {
-        _timerToSit = 0f;
-        _currentState = State.Idle;
+        _numOfPlayingAnimations = 0;
     }
 
     private void MoveToTarget(Vector3 targetPos)
     {
         if (!IsCloseEnough(transform.position, targetPos, _minimumDistanceToMove) && _targetPosition != targetPos)
         {
-            if (_currentState == State.Sitting)
+            if (IsSitting() && _canStandUp)
             {
+                _isAnotherPawnOnTargetPosition = false;
+                _canStandUp = false;
                 OnEndedSitting?.Invoke(this, EventArgs.Empty);
             }
 

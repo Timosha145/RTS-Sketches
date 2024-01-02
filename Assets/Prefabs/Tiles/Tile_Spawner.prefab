@@ -907,6 +907,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3328726271118004307, guid: a56401a6cabcc7f4387efa1fc6fbfa25,
         type: 3}
+      propertyPath: m_Icon
+      value: 
+      objectReference: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000,
+        type: 0}
+    - target: {fileID: 3328726271118004307, guid: a56401a6cabcc7f4387efa1fc6fbfa25,
+        type: 3}
       propertyPath: m_Name
       value: Tile_Spawner
       objectReference: {fileID: 0}
@@ -969,11 +975,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae8cef2f453e12742a556d119939a323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Team>k__BackingField: {fileID: 0}
   _spawnPoint: {fileID: 2961628622823143275}
   _gatheringPoint: {fileID: 7591361877286346744}
-  _pawnPrefab: {fileID: 1503718354642631465, guid: abbe1ef1f75d1044cac34d667cbcec64,
-    type: 3}
 --- !u!4 &8480221323711069680 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1164812262302617432, guid: a56401a6cabcc7f4387efa1fc6fbfa25,

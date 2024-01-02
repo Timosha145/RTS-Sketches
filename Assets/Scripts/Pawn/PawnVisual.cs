@@ -13,8 +13,6 @@ public class PawnVisual : MonoBehaviour
     [SerializeField] private Transform[] _bonesArray;
     [SerializeField] private HealthBarUI _healthBarUI;
 
-    public EventHandler OnAttack;
-
     private Outline _selectedOutline;
     private Animator _animator;
 
@@ -60,10 +58,9 @@ public class PawnVisual : MonoBehaviour
         _pawn.OnHealthChanged -= Pawn_OnHealthChanged;
     }
 
-    protected void Attack()
+    protected void Attack(int numberOfHitsPerAttack)
     {
-        OnAttack?.Invoke(this, EventArgs.Empty);
-        _pawn.OnAttackTarget();
+        _pawn.OnAttackTarget(numberOfHitsPerAttack);
     }
 
     protected void AttackEnded()
@@ -72,9 +69,9 @@ public class PawnVisual : MonoBehaviour
         AnimationStopped();
     }
 
-    protected void AnimationStopped()
+    protected void AnimationStopped(int stateIndex = -1)
     {
-        _pawn.OnAnimationStopped();
+        _pawn.OnAnimationStopped(stateIndex);
     }
 
     protected void AnimationStarted()

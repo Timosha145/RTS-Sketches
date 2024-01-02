@@ -30,7 +30,7 @@ public class Team : MonoBehaviour
         CurrentMaxPawns = TeamDataSO.MinPawns;
         PawnsInTeam = new List<Pawn>();
         CapturedTiles = new List<TileBase>();
-        TileSpawner.Init(this);
+        TileSpawner?.Init(this);
 
         Material = new Material(TeamDataSO.DefaultMaterial);
         Material.color = TeamDataSO.TeamColor;

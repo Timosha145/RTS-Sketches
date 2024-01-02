@@ -11,7 +11,6 @@ using Random = UnityEngine.Random;
 public class Bot : ExtendedMonoBehaviour
 {
     [field: SerializeField] public string Name { get; private set; }
-    [SerializeField] bool ISTEST = false;
 
     private float _timerToMakeMove, _timerToMakeMoveMax = 5f;
     private float _timerToClearData, _timerToClearDataMax = 30f;
@@ -148,7 +147,6 @@ public class Bot : ExtendedMonoBehaviour
 
             if (pawn == null || EvaluateChance(chanceForEachPawn))
             {
-                if (ISTEST && pawn!=null) Debug.Log($"Free this guy: [{pawn}] [{chanceForEachPawn}%]");
                 pawns.RemoveAt(i);
             }
         }
@@ -173,7 +171,7 @@ public class Bot : ExtendedMonoBehaviour
 
     private void SetPriorityTiles()
     {
-        if (_tilesInPriority != null) return;
+        if (_tilesInPriority != null || _team.TileSpawner == null) return;
 
         Vector3 _spawnTilePos = _team.TileSpawner.transform.position;
         _tilesInPriority = GameManager.Instance.Tiles
@@ -189,7 +187,6 @@ public class Bot : ExtendedMonoBehaviour
 
             if (!tile.IsAnyPawnOfTeam(_team) && EvaluateChance(chanceToDefendTile))
             {
-                if (ISTEST) Debug.Log($"Defense tile: [{tile}] [{chanceToDefendTile}%]");
                 FormGroupAndSendToTile(tile, PawnOrder.CircleTarget, _ignorePawns);
             }
         }
@@ -204,7 +201,6 @@ public class Bot : ExtendedMonoBehaviour
             float chanceToSendPatrolingByActivity = GetTilePriorityInPercentege(tile) + tile.Activity * tileActivityModifier;
             if (EvaluateChance(chanceToSendPatrolingByActivity) && tile.Activity > 0)
             {
-                if (ISTEST) Debug.Log($"Patrol tile: [{tile}] [{chanceToSendPatrolingByActivity}%]");
                 FormGroupAndSendToTile(tile, PawnOrder.LineUpOnTarget, _patrollingPawns);
             }
         }
@@ -232,7 +228,6 @@ public class Bot : ExtendedMonoBehaviour
 
         if (group.ShouldGoCapturing(_riskChanceModifier))
         {
-            if (ISTEST) Debug.Log($"Formed group count [{group.Pawns.Count}]");
             group.Order(order);
         }
     }
@@ -294,7 +289,6 @@ public class Bot : ExtendedMonoBehaviour
 
                 tilesToCaptureForPawns.Add(tileToCapture);
                 formedPawnGroups.Add(group);
-                _ignorePawns.Add(pawn);
             }
             else if (IsAnyGroupNotFull(formedPawnGroups))
             {
@@ -308,6 +302,7 @@ public class Bot : ExtendedMonoBehaviour
             if (formedPawnGroups[i].ShouldGoCapturing(_riskChanceModifier))
             {
                 PawnTask.OrderPawns(PawnOrder.LineUpOnTarget, formedPawnGroups[i].Pawns, tilesToCaptureForPawns[i].transform.position);
+                _ignorePawns.AddRange(formedPawnGroups[i].Pawns);
             }
         }
     }
@@ -420,7 +415,7 @@ public class Bot : ExtendedMonoBehaviour
 
     private int GetBalancedNumOfPawnsToSendCapturing(TileBase tileToCapture)
     {
-        float chanceToIncreaseMinPawns = 40 * _safeChanceModifier;
+        float chanceToIncreaseMinPawns = 25 * _safeChanceModifier;
         int minNumOfPawnsToSend = EvaluateChance(chanceToIncreaseMinPawns) ? 2 : 1;
 
         // Is it last tile to capture
